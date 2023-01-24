@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: awh
+  labels:
+    app.kubernetes.io/name: awh
+spec:
+  containers:
+    - name: awh
+      image: TEMPLATE_IMAGE
+      ports:
+        - containerPort: 8080
+          name: awh-web-svc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: awh-service
+spec:
+  selector:
+    app.kubernetes.io/name: awh
+  ports:
+    - name: awh-port
+      protocol: TCP
+      port: 443
+      targetPort: awh-web-svc
+  type: ClusterIP

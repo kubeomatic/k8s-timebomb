@@ -74,8 +74,8 @@ done
 #  \ V / ___ \|  _ < ___) |
 #   \_/_/   \_\_| \_\____/
 #
-export TAG_COUNT=$(cat build.tag.count)
-expr $TAG_COUNT + 1 > build.tag.count
+export TAG_COUNT=$(cat pipe/build.tag.count)
+expr $TAG_COUNT + 1 > pipe/build.tag.count
 export BUILD_TAG=1.$TAG_COUNT
 export BUILD_REGISTRY=localhost:5000
 export BUILD_DST_IMAGE=awh-sb01
@@ -88,7 +88,7 @@ export KUBECONFIG=$HOME/.kube/configs/kind
 #|  __/|  _ <| |___|  __/ ___ \|  _ <| |___
 #|_|   |_| \_\_____|_| /_/   \_\_| \_\_____|
 #
-cat template-awh-deploy.yml | sed -e 's|TEMPLATE_IMAGE|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG'|g' > awh-deploy.yml
+cat pipe/template-awh-deploy.yml | sed -e 's|TEMPLATE_IMAGE|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG'|g' > awh-deploy.yml
 cd $WORKDIR
 # ____  _   _ _   _ ____
 #|  _ \| | | | \ | / ___|
