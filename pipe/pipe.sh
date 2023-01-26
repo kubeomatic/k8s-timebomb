@@ -58,6 +58,32 @@ function RUN() {
     fi
   done
 }
+function CERTIFICATE() {
+  export SSL_CA_KEY=rootCA.key
+  export SSL_CA_CERT=rootCA.crt
+  export SSL_DEVICE_KEY=device.key
+  export SSL_REQUEST_KEY=device.csr
+  export SSL_DEVICE_CERT=device.crt
+  export SSL_KS_P12=ks.p12
+  export SSL_KS_JKS=ks.jks
+  export SSL_SUBJECT="'/C=BR/ST=Sao_Paulo/L=Sao_Paulo/O=br.com.clusterlab/OU=Clusterlab/CN=shm/emailAddress=devops@clusterlab.com.br'"
+  RUN "rm -f $SSL_CA_KEY" ignore
+  RUN "rm -f $SSL_CA_CERT" ignore
+  RUN "rm -f $SSL_DEVICE_KEY" ignore
+  RUN "rm -f $SSL_REQUEST_KEY" ignore
+  RUN "rm -f $SSL_DEVICE_CERT" ignore
+  RUN "rm -f $SSL_KS_P12" ignore
+  RUN "rm -f $SSL_KS_JKS" ignore
+  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $SSL_CA_KEY $SSL_LENGTH"
+  RUN "openssl req -x509 -new -nodes -key $SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $SSL_CA_CERT -subj $SSL_SUBJECT"
+  RUN "openssl genrsa -out $SSL_DEVICE_KEY 2048"
+  RUN "openssl req -new -key $SSL_DEVICE_KEY -out $SSL_REQUEST_KEY -subj $SSL_SUBJECT"
+  RUN "openssl x509 -req -in $SSL_REQUEST_KEY -CA $SSL_CA_CERT -CAkey $SSL_CA_KEY -CAcreateserial -out $SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS "
+  RUN "openssl pkcs12 -export -in $SSL_DEVICE_CERT -inkey  $SSL_DEVICE_KEY -name awh -out SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
+  RUN "keytool -importkeystore -destkeystore $SSL_KS_P12 -srckeystore SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+  RUN "keytool -importkeystore -destkeystore $SSL_KS_JKS -srckeystore SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+
+}
 # _____ _____ ____ _____
 #|_   _| ____/ ___|_   _|
 #  | | |  _| \___ \ | |
@@ -81,6 +107,9 @@ export BUILD_REGISTRY=localhost:5000
 export BUILD_DST_IMAGE=awh-sb01
 export BUILD_SRC_IMAGE=mcr.microsoft.com/openjdk/jdk:17-ubuntu
 export KUBECONFIG=$HOME/.kube/configs/kind
+export SSL_PASS=abcabc
+export SSL_LENGTH=2048
+export SSL_EXPIRE=3650
 
 # ____  ____  _____ ____   _    ____  _____
 #|  _ \|  _ \| ____|  _ \ / \  |  _ \| ____|
@@ -96,7 +125,7 @@ cd $WORKDIR
 #|  _ <| |_| | |\  |___) |
 #|_| \_\\___/|_| \_|____/
 #
-
+CERTIFICATE
 RUN "mvn compile jib:build -Dmaven.wagon.http.ssl.insecure=true package"
 RUN "docker pull $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "kind load docker-image $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
@@ -108,15 +137,4 @@ RUN "kubectl -n awh apply -f awh-deploy.yml"
 RUN "kubectl -n awh get all"
 
 
-#keytool -genkeypair -alias baeldung -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore baeldung.p12 -validity 3650
-#keytool -genkeypair -alias baeldung -keyalg RSA -keysize 2048 -keystore baeldung.jks -validity 3650
-#keytool -importkeystore -srckeystore baeldung.jks -destkeystore baeldung.p12 -deststoretype pkcs12
-#
-#openssl genrsa -des3 -out myCA.key 2048
-#
-#openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem
-#
-##CA
-#openssl genrsa -out rootCA.key 2048
-openssl genrsa -des3 -passout pass:abc -out rootCA.key 2048
-openssl req -x509 -new -nodes -key rootCA.key -passin pass:abc -sha256 -days 3650 -out rootCA.pem -subj "/C=BR/ST=Sao Paulo/L=Sao Paulo/O=br.com.clusterlab/OU=Clusterlab/CN=shm/emailAddress=devops@clusterlab.com.br"
+
