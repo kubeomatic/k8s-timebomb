@@ -26,28 +26,29 @@ function RUN() {
   do
     date
     echo $1
-    time $1
+    time eval $1
     if [ $? -ne 0 ]
     then
       echo FAIL $?
       echo FAIL $1
-      if [ "$2" != "ignore" ] || [ "$2" != "retry_ignore" ]
-      then
-        echo Continue
-        export RC=0
-        if [ "$2" == "retry" ] || [ "$2" != "retry_ignore" ]
-        then
+      case $2 in
+        ignore)
+          export RC=0
+          ;;
+        retry)
           if [ $RC -eq 3 ]
           then
             export RC=2
+            sleep 10
           else
             export RC=1
             exit 1
           fi
-        fi
-      else
-        exit 1
-      fi
+          ;;
+        *)
+          exit 1
+          ;;
+      esac
     else
       echo SUCCESS $1
       export RC=0
@@ -77,9 +78,9 @@ function CERTIFICATE() {
   RUN "mkdir -p $TMPBASEDIR" ignore
 
   RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
-  RUN "eval openssl req -x509 -new -nodes -key $TMPBASEDIR/$SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $TMPBASEDIR/$SSL_CA_CERT -subj $SSL_SUBJECT"
+  RUN "openssl req -x509 -new -nodes -key $TMPBASEDIR/$SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $TMPBASEDIR/$SSL_CA_CERT -subj $SSL_SUBJECT"
   RUN "openssl genrsa -out $TMPBASEDIR/$SSL_DEVICE_KEY 2048"
-  RUN "eval openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
+  RUN "openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
   RUN "openssl x509 -req -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS "
   RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
   RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
@@ -92,7 +93,7 @@ function CERTIFICATE() {
 #  | | | |___ ___) || |
 #  |_| |_____|____/ |_|
 #
-for BIN in {docker,kubectl,kind,mvn,keytool,openssl}
+for BIN in {docker,kubectl,kind,mvn,keytool,openssl,pkill}
 do
   TEST_BIN $BIN
 done
@@ -138,6 +139,15 @@ RUN "kubectl delete ns awh" ignore
 RUN "kubectl create ns awh"
 RUN "kubectl -n awh apply -f awh-deploy.yml"
 RUN "kubectl -n awh get all"
-
+RUN "kubectl -n awh port-forward service/awh-service 8443:443" retry  2>&1 > /dev/null &
+export BGP=$!
+echo $BGP
+for count in $(seq 1 30)
+do
+  RUN "kubectl -n awh get all"
+  sleep 1
+done
+read
+RUN "pkill -P $BGP"
 
 
