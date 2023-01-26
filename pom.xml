@@ -44,6 +44,15 @@
 			<version>3.3.1</version>
 			<scope>provided</scope>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-security</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.security</groupId>-->
+<!--			<artifactId>spring-security-config</artifactId>-->
+<!--			<version>6.0.1</version>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>
@@ -79,6 +88,14 @@
 						<!--                            <password>${env.REGISTRY_PASSWORD}</password>-->
 						<!--                        </auth>-->
 					</to>
+					<extraDirectories>
+						<paths>
+							<path>
+								<from>extra</from>
+								<into>/extra</into>
+							</path>
+						</paths>
+					</extraDirectories>
 				</configuration>
 				<executions>
 					<execution>

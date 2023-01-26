@@ -9,7 +9,7 @@ spec:
     - name: awh
       image: TEMPLATE_IMAGE
       ports:
-        - containerPort: 8080
+        - containerPort: 8443
           name: awh-web-svc
 
 ---
