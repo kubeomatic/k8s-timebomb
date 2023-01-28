@@ -5,6 +5,111 @@
 #|  _| | |_| | |\  | |___  | |  | | |_| | |\  |___) |
 #|_|    \___/|_| \_|\____| |_| |___\___/|_| \_|____/
 #
+function GENPASS() {
+    #!/bin/bash
+    if [ $# -eq 2 ]
+    then
+        export tamanho=$2
+    else
+        export tamanho=13
+    fi
+    function HIGH() {
+        # tr -dc A-Za-z0-9!?@#_ < /dev/urandom | head -c ${tamanho} | xargs
+        while true
+        do
+            export PASSWORD=$(tr -dc 'A-Za-z0-9!?@#_' < /dev/urandom | head -c ${tamanho}  | xargs)
+
+            if  [ $(echo $PASSWORD  | sed -e "s/./&\n/g" | egrep "\!|@|#|_|\?" | wc -l ) -gt 2 ] &&  \
+                [ $(echo $PASSWORD  | sed -e "s/./&\n/g" | grep "[0-9]" | wc -l ) -gt 2 ] && \
+                [ $(echo $PASSWORD  | sed -e "s/./&\n/g" | grep "[a-z]" | wc -l ) -gt 2 ] && \
+                [ $(echo $PASSWORD  | sed -e "s/./&\n/g" | grep "[A-Z]" | wc -l ) -gt 2 ]
+            then
+                echo GOOD $PASSWORD
+                break
+            else
+                echo WEAK $PASSWORD
+            fi
+        done
+
+    }
+    function MEDIUM() {
+        tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${tamanho} | xargs
+    }
+    function LOW() {
+        tr -dc A-Za-z0-9 < /dev/urandom | head -c ${tamanho} | xargs
+    }
+    function NUMBER() {
+        tr -dc 0-9 < /dev/urandom | head -c ${tamanho} | xargs
+    }
+    function HEXA() {
+        tr -dc A-F0-9 < /dev/urandom | head -c ${tamanho} | xargs
+    }
+    function FAKEWWN() {
+        tr -dc A-F0-9 < /dev/urandom | head -c 16 | xargs  | sed -e "s/^0x//g" | sed -r "s/../&:/g" | sed -e "s/$://g" | tr "a-z" "A-Z" | sed -e "s/:$//g"
+    }
+    function HELP() {
+        echo HELP
+        echo $(echo $0 | tr '\/' '\n' | tail -n 1) \<numero de caracteres\> \| \[ alto \| medio \| baixo \| numero \| hexa \] \<numero de caracteres\>
+        echo $(echo $0 | tr '\/' '\n' | tail -n 1) \[ alto \| medio \| baixo \| numero \| hexa \| fakewwn\]
+        echo $(echo $0 | tr '\/' '\n' | tail -n 1) \#Opção default utiliza a complexidade alta com $tamanho caracteres
+    }
+    case $1 in
+        alto)
+            HIGH
+            ;;
+        medio)
+            MEDIUM
+            ;;
+        baixo)
+            LOW
+            ;;
+        numero)
+            NUMBER
+            ;;
+        hexa)
+            HEXA
+            ;;
+        fakewwn)
+            FAKEWWN
+            ;;
+        help)
+            HELP
+            ;;
+        ajuda)
+            HELP
+            ;;
+        *)
+            re='^[0-9]+$'
+            if ! [[ $1 =~ $re ]]
+            then
+            export tamanho=13
+            else
+            export tamanho=$1
+            fi
+            HIGH
+            ;;
+    esac
+}
+function CENSOR() {
+    coproc stdbuf -o0 sed "s/$1/***/g" &
+    while read -r LINE
+    do
+        echo "$LINE" >&${COPROC[1]}
+        read -u ${COPROC[0]} msg
+        echo "$msg"
+    done
+    kill $COPROC_PID
+}
+
+function CENSOR_BUILD() {
+    export SECRETSTRING=''
+    echo $1 | tr ';' '\n' | \
+    while read SECRET
+    do
+        export SECRETSTRING="CENSOR $SECRET | $SECRETSTRING"
+        echo $SECRETSTRING
+    done | tail -n 1 | sed -e "s/|$//g"
+}
 function TEST_BIN() {
   if [ $(which $1 | wc -l | awk '{print $1} ') -eq 0 ]
     then
@@ -25,12 +130,12 @@ function RUN() {
   while true
   do
     date
-    echo $1
-    time eval $1
+    echo $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
+    time eval $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
     if [ $? -ne 0 ]
     then
       echo FAIL $?
-      echo FAIL $1
+      echo FAIL $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
       case $2 in
         ignore)
           export RC=0
@@ -50,7 +155,7 @@ function RUN() {
           ;;
       esac
     else
-      echo SUCCESS $1
+      echo SUCCESS $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
       export RC=0
     fi
     if [ $RC -eq 0 ]
@@ -67,15 +172,7 @@ function CERTIFICATE() {
   export SSL_DEVICE_CERT=device.crt
   export SSL_KS_P12=ks.p12
   export SSL_KS_JKS=ks.jks
-  export TMPBASEDIR=tmp
-  export BASEDIR=extra
 
-
-  RUN "rm -f $TMPBASEDIR/*" ignore
-  RUN "rm -f $BASEDIR/*" ignore
-
-  RUN "mkdir -p $BASEDIR" ignore
-  RUN "mkdir -p $TMPBASEDIR" ignore
 
   RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
   RUN "openssl req -x509 -new -nodes -key $TMPBASEDIR/$SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $TMPBASEDIR/$SSL_CA_CERT -subj $SSL_SUBJECT"
@@ -110,10 +207,14 @@ export BUILD_REGISTRY=localhost:5000
 export BUILD_DST_IMAGE=awh-sb01
 export BUILD_SRC_IMAGE=mcr.microsoft.com/openjdk/jdk:17-ubuntu
 export KUBECONFIG=$HOME/.kube/configs/kind
+#export SSL_PASS="$(GENPASS | grep ^GOOD | awk '{print $2}' )"
 export SSL_PASS=abcabc
+#echo $SSL_PASS
 export SSL_LENGTH=2048
 export SSL_EXPIRE=3650
 export SSL_SUBJECT="'/C=BR/ST=Sao_Paulo/L=Sao_Paulo/O=clusterlab.com.br/OU=Clusterlab/CN=shm/emailAddress=devops@clusterlab.com.br'"
+export TMPBASEDIR=tmp
+export BASEDIR=extra
 
 # ____  ____  _____ ____   _    ____  _____
 #|  _ \|  _ \| ____|  _ \ / \  |  _ \| ____|
@@ -123,6 +224,10 @@ export SSL_SUBJECT="'/C=BR/ST=Sao_Paulo/L=Sao_Paulo/O=clusterlab.com.br/OU=Clust
 #
 cat pipe/template-awh-deploy.yml | sed -e 's|TEMPLATE_IMAGE|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG'|g' > awh-deploy.yml
 cd $WORKDIR
+RUN "rm -f $TMPBASEDIR/*" ignore
+RUN "rm -f $BASEDIR/*" ignore
+RUN "mkdir -p $BASEDIR" ignore
+RUN "mkdir -p $TMPBASEDIR" ignore
 # ____  _   _ _   _ ____
 #|  _ \| | | | \ | / ___|
 #| |_) | | | |  \| \___ \
@@ -130,7 +235,7 @@ cd $WORKDIR
 #|_| \_\\___/|_| \_|____/
 #
 CERTIFICATE
-RUN "mvn compile jib:build -Dmaven.wagon.http.ssl.insecure=true package"
+RUN "mvn compile jib:build -Dmaven.wagon.http.ssl.insecure=true -Dmaven.test.skip=true package"
 RUN "docker pull $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "kind load docker-image $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "docker image ls"
@@ -139,15 +244,11 @@ RUN "kubectl delete ns awh" ignore
 RUN "kubectl create ns awh"
 RUN "kubectl -n awh apply -f awh-deploy.yml"
 RUN "kubectl -n awh get all"
+sleep 5
 RUN "kubectl -n awh port-forward service/awh-service 8443:443" retry  2>&1 > /dev/null &
-export BGP=$!
-echo $BGP
-for count in $(seq 1 30)
-do
-  RUN "kubectl -n awh get all"
-  sleep 1
-done
+export PIDPF=$!
 read
-RUN "pkill -P $BGP"
+RUN "pkill -P $PIDPF"
+
 
 
