@@ -9,10 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/validate")
 public class ValidatingWebhookController {
     Logger logger = LoggerFactory.getLogger(ValidatingWebhookController.class);
-    @PostMapping({"/pods","/health"})
-    public String welcome(@RequestBody ObjectNode request) {
+    @PostMapping({"/pods"})
+    public String pods(@RequestBody ObjectNode request) {
         logger.info(String.valueOf(request));
-        return "Olá Mundo";
+        return "Validating pods";
+    }
+    @PostMapping({"/health"})
+    public String health(@RequestBody ObjectNode request) {
+        logger.info(String.valueOf(request));
+        return "Validating health";
     }
 
 }
