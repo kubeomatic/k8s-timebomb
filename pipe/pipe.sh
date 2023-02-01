@@ -165,11 +165,20 @@ function RUN() {
   done
 }
 function CERTIFICATE() {
-  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
-  RUN "openssl req -x509 -new -nodes -key $TMPBASEDIR/$SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $TMPBASEDIR/$SSL_CA_CERT -subj $SSL_SUBJECT"
-  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_DEVICE_KEY 2048"
-  RUN "openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
-  RUN "openssl x509 -req -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS -extfile <(printf "$SSL_ALTNAME")"
+#  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
+#  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
+#  RUN "openssl req -x509 -new -nodes -key $TMPBASEDIR/$SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $TMPBASEDIR/$SSL_CA_CERT -subj $SSL_SUBJECT"
+#  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_DEVICE_KEY $SSL_LENGTH"
+#  RUN "openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
+#  RUN "openssl x509 -req -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS -extfile <(printf "$SSL_ALTNAME")"
+#  RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
+#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+
+  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
+  RUN "openssl req -new -x509 -days $SSL_EXPIRE -key $TMPBASEDIR/$SSL_CA_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_CA_CERT"
+  RUN "openssl req -newkey rsa:$SSL_LENGTH -nodes -keyout $TMPBASEDIR/$SSL_DEVICE_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_REQUEST_KEY"
+  RUN "openssl x509 -req -extfile <(printf "$SSL_ALTNAME") -days $SSL_EXPIRE -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT"
   RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
   RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
   RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
@@ -210,7 +219,7 @@ export SSL_PASS=abcabc
 export SSL_LENGTH=2048
 export SSL_EXPIRE=3650
 export SSL_SUBJECT="'/C=BR/ST=Sao_Paulo/L=Sao_Paulo/O=clusterlab.com.br/OU=Clusterlab/CN=awh-service.awh.svc.cluster.local/emailAddress=devops@clusterlab.com.br'"
-export SSL_ALTNAME="subjectAltName=DNS:awh-service.awh.svc.cluster.local"
+export SSL_ALTNAME="subjectAltName=DNS:awh-service.awh.svc.cluster.local,DNS:awh-service.awh.svc"
 export TMPBASEDIR=tmp
 export BASEDIR=extra
 
@@ -242,8 +251,9 @@ RUN "docker pull $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "kind load docker-image $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "docker image ls"
 RUN "kubectl get nodes"
-RUN "kubectl delete ns awh" ignore
-RUN "kubectl create ns awh"
+#RUN "kubectl delete ns awh" ignore
+#RUN "kubectl create ns awh"
+RUN "kubectl -n awh delete -f awh-deploy.yml"
 RUN "kubectl -n awh apply -f awh-deploy.yml"
 RUN "kubectl -n awh get all"
 sleep 5
