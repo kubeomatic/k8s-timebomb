@@ -11,12 +11,12 @@ public class ValidatingWebhookController {
     Logger logger = LoggerFactory.getLogger(ValidatingWebhookController.class);
     @PostMapping({"/pods"})
     public String pods(@RequestBody ObjectNode request) {
-        logger.info(String.valueOf(request));
+        logger.info(String.valueOf(request.asText()));
         return "Validating pods";
     }
     @PostMapping({"/health"})
     public String health(@RequestBody ObjectNode request) {
-        logger.info(String.valueOf(request));
+        logger.info(String.valueOf(request.asText()));
         return "Validating health";
     }
 

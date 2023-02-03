@@ -125,6 +125,19 @@ function TEST_BIN() {
       fi
     fi
 }
+function TEMPFILE() {
+	case $1 in
+	create)
+		mktemp
+		;;
+	delete)
+		rm  -f $2
+		;;
+	*)
+		EXITNOW "could not create temporary file"
+		;;
+	esac
+}
 function RUN() {
   export RC=3
   while true
@@ -164,24 +177,32 @@ function RUN() {
     fi
   done
 }
+function CONCAT_CA() {
+  export TMPCERT=$(TEMPFILE create)
+  cat $1 > $TMPCERT
+  cat $2 >> $TMPCERT
+  cp $TMPCERT $2
+  TEMPFILE delete $TMPCERT
+}
 function CERTIFICATE() {
-#  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
-#  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
-#  RUN "openssl req -x509 -new -nodes -key $TMPBASEDIR/$SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $TMPBASEDIR/$SSL_CA_CERT -subj $SSL_SUBJECT"
-#  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_DEVICE_KEY $SSL_LENGTH"
-#  RUN "openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
-#  RUN "openssl x509 -req -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS -extfile <(printf "$SSL_ALTNAME")"
-#  RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
-#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
-#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
-
-  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
-  RUN "openssl req -new -x509 -days $SSL_EXPIRE -key $TMPBASEDIR/$SSL_CA_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_CA_CERT"
-  RUN "openssl req -newkey rsa:$SSL_LENGTH -nodes -keyout $TMPBASEDIR/$SSL_DEVICE_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_REQUEST_KEY"
-  RUN "openssl x509 -req -extfile <(printf "$SSL_ALTNAME") -days $SSL_EXPIRE -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT"
+  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
+  RUN "openssl genrsa -des3 -passout pass:$SSL_PASS -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
+  RUN "openssl req -x509 -new -nodes -key $TMPBASEDIR/$SSL_CA_KEY  -passin pass:$SSL_PASS -sha256 -days 3650 -out $TMPBASEDIR/$SSL_CA_CERT -subj $SSL_SUBJECT"
+  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_DEVICE_KEY $SSL_LENGTH"
+  RUN "openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
+  RUN "openssl x509 -req -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS -extfile <(printf "$SSL_ALTNAME")"
+#  RUN "CONCAT_CA $TMPBASEDIR/$SSL_CA_CERT $TMPBASEDIR/$SSL_DEVICE_CERT"
   RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
   RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
   RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+
+#  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
+#  RUN "openssl req -new -x509 -days $SSL_EXPIRE -key $TMPBASEDIR/$SSL_CA_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_CA_CERT"
+#  RUN "openssl req -newkey rsa:$SSL_LENGTH -nodes -keyout $TMPBASEDIR/$SSL_DEVICE_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_REQUEST_KEY"
+#  RUN "openssl x509 -req -extfile <(printf "$SSL_ALTNAME") -days $SSL_EXPIRE -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT"
+#  RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
+#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
 
 }
 # _____ _____ ____ _____
@@ -190,7 +211,7 @@ function CERTIFICATE() {
 #  | | | |___ ___) || |
 #  |_| |_____|____/ |_|
 #
-for BIN in {killall,docker,kubectl,kind,mvn,keytool,openssl,pkill}
+for BIN in {killall,docker,kubectl,kind,mvn,keytool,openssl,pkill,stern}
 do
   TEST_BIN $BIN
 done
@@ -234,10 +255,15 @@ cat pipe/template-awh-deploy.yml | \
     -e 's|TEMPLATE_DEPLOY_IMAGE|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG'|g' \
     -e 's|TEMPLATE_VALIDATINGWH_CAROOT|'$(cat $TMPBASEDIR/$SSL_CA_CERT | base64 -w 0)'|g' > awh-deploy.yml
 cd $WORKDIR
-RUN "rm -f $TMPBASEDIR/*" ignore
-RUN "rm -f $BASEDIR/*" ignore
+
+if ! [ -f $BASEDIR/$SSL_KS_P12 ]
+then
+  RUN "rm -f $TMPBASEDIR/*" ignore
+  RUN "rm -f $BASEDIR/*" ignore
+fi
 RUN "mkdir -p $BASEDIR" ignore
 RUN "mkdir -p $TMPBASEDIR" ignore
+RUN "kind delete cluster ; kind create cluster ; kind get kubeconfig > $HOME/.kube/configs/kind"
 RUN "killall kubectl" ignore
 # ____  _   _ _   _ ____
 #|  _ \| | | | \ | / ___|
@@ -245,20 +271,22 @@ RUN "killall kubectl" ignore
 #|  _ <| |_| | |\  |___) |
 #|_| \_\\___/|_| \_|____/
 #
-CERTIFICATE
+if ! [ -f $BASEDIR/$SSL_KS_P12 ]
+then
+  CERTIFICATE
+fi
 RUN "mvn compile jib:build -Dmaven.wagon.http.ssl.insecure=true -Dmaven.test.skip=true package"
 RUN "docker pull $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "kind load docker-image $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "docker image ls"
 RUN "kubectl get nodes"
-#RUN "kubectl delete ns awh" ignore
-#RUN "kubectl create ns awh"
 RUN "kubectl -n awh delete -f awh-deploy.yml"
 RUN "kubectl -n awh apply -f awh-deploy.yml"
 RUN "kubectl -n awh get all"
 sleep 5
 RUN "kubectl -n awh port-forward service/awh-service 8443:443" retry  &
 export PIDPF=$!
+stern -n awh awh
 read
 RUN "pkill -P $PIDPF"
 
