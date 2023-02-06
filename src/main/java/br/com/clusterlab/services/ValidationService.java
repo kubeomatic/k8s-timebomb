@@ -1,4 +1,4 @@
-package br.com.clusterlab.k8sadmissioncontroller;
+package br.com.clusterlab.services;
 
 import br.com.clusterlab.dto.response.AdmissionReview;
 import br.com.clusterlab.dto.response.Response;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/validate")
-public class ValidatingWebhookController {
-    Logger logger = LoggerFactory.getLogger(ValidatingWebhookController.class);
+public class ValidationService {
+    Logger logger = LoggerFactory.getLogger(ValidationService.class);
     @PostMapping({"/pods"})
     public String pods(@RequestBody ObjectNode request) {
         ObjectMapper om = new ObjectMapper();
@@ -35,8 +35,6 @@ public class ValidatingWebhookController {
         response.setUid(uid);
         response.setStatus(status);
 
-        admissionReview.setApiVersion("admission.k8s.io/v1");
-        admissionReview.setKind("AdmissionReview");
         admissionReview.setResponse(response);
         String responseData;
         try {
@@ -48,9 +46,4 @@ public class ValidatingWebhookController {
         logger.info("RESPONSEDATA " + responseData);
         return responseData;
     }
-    @PostMapping({"/health"})
-    public String health(@RequestBody ObjectNode request) {
-        return "Validating health";
-    }
-
 }
