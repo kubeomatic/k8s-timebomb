@@ -24,7 +24,7 @@ public class ValidatingWebhookController {
         logger.info(request.path("request").path("resource").required("resource").asText());
         if (request.path("request").path("resource").required("resource").asText().toString().toLowerCase() != "pods") {
             status.setCode(403);
-            status.setMessage("Resource NOT Authorized");
+            status.setMessage("Resource NOT Authorized. \"D'Amato disse que vai subir ninguem!\"");
             response.setAllowed(false);
         } else {
             status.setCode(200);
