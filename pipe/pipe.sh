@@ -263,7 +263,7 @@ then
 fi
 RUN "mkdir -p $BASEDIR" ignore
 RUN "mkdir -p $TMPBASEDIR" ignore
-RUN "kind delete cluster ; kind create cluster ; kind get kubeconfig > $HOME/.kube/configs/kind"
+#RUN "kind delete cluster ; kind create cluster ; kind get kubeconfig > $HOME/.kube/configs/kind"
 RUN "killall kubectl" ignore
 # ____  _   _ _   _ ____
 #|  _ \| | | | \ | / ___|
@@ -286,7 +286,7 @@ RUN "kubectl -n awh get all"
 sleep 5
 RUN "kubectl -n awh port-forward service/awh-service 8443:443" retry  &
 export PIDPF=$!
-stern -n awh awh
+#stern -n awh awh
 read
 RUN "pkill -P $PIDPF"
 
