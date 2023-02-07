@@ -21,12 +21,15 @@ public class ValidationService {
         Status status = new Status();
         Response response = new Response();
         AdmissionReview admissionReview = new AdmissionReview();
-        logger.info(request.path("request").path("resource").required("resource").asText());
-        if (request.path("request").path("resource").required("resource").asText().toString().toLowerCase() != "pods") {
+        String resourceMatch = request.path("request").path("resource").required("resource").textValue().toString().toLowerCase();
+        logger.info(resourceMatch);
+        if ( ! "pods".equals(resourceMatch)) {
+            logger.info(resourceMatch + " iqual " + "pods");
             status.setCode(403);
-            status.setMessage("Resource NOT Authorized. \"D'Amato disse que vai subir ninguem!\"");
+            status.setMessage("Resource NOT Authorized.\"");
             response.setAllowed(false);
         } else {
+            logger.info(resourceMatch + " not iqual " + "pods");
             status.setCode(200);
             status.setMessage("Resource Authorized");
             response.setAllowed(true);
