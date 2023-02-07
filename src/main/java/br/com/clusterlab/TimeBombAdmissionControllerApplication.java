@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 //@PropertySource("classpath:application-defaults.properties")
-public class K8sAdmissionControllerApplication {
+public class TimeBombAdmissionControllerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication application = new SpringApplication(K8sAdmissionControllerApplication.class);
+		SpringApplication application = new SpringApplication(TimeBombAdmissionControllerApplication.class);
 		application.setAdditionalProfiles("ssl");
 		application.run(args);
 	}

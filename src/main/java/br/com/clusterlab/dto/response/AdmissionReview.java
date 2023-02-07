@@ -22,9 +22,11 @@ import org.springframework.beans.factory.annotation.Value;
 public class AdmissionReview {
 
     @JsonProperty("apiVersion")
-    private String apiVersion = "admission.k8s.io/v1";
+    @Value("${clusterlab-com-br.kubernetes.admission.review.apiversion}")
+    private String apiVersion;
     @JsonProperty("kind")
-    private String kind = "AdmissionReview";
+    @Value("${clusterlab-com-br.kubernetes.admission.review.kind}")
+    private String kind;
     @JsonProperty("response")
     private Response response;
     @JsonIgnore
