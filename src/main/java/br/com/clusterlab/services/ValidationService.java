@@ -24,12 +24,12 @@ public class ValidationService {
         String resourceMatch = request.path("request").path("resource").required("resource").textValue().toString().toLowerCase();
         logger.info(resourceMatch);
         if ( ! "pods".equals(resourceMatch)) {
-            logger.info(resourceMatch + " iqual " + "pods");
+            logger.info(resourceMatch + "not iqual " + "pods");
             status.setCode(403);
             status.setMessage("Resource NOT Authorized.\"");
             response.setAllowed(false);
         } else {
-            logger.info(resourceMatch + " not iqual " + "pods");
+            logger.info(resourceMatch + " iqual " + "pods");
             status.setCode(200);
             status.setMessage("Resource Authorized");
             response.setAllowed(true);

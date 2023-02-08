@@ -47,14 +47,14 @@ spec:
               port: 8443
               scheme: HTTPS
             initialDelaySeconds: 3
-            periodSeconds: 50
+            periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8443
               scheme: HTTPS
             initialDelaySeconds: 3
-            periodSeconds: 50
+            periodSeconds: 20
 
 ---
 apiVersion: v1
@@ -86,7 +86,7 @@ webhooks:
     rules:
       - apiGroups: [""]
         apiVersions: ["v1"]
-        operations: ["CREATE","UPDATE"]
+        operations: ["*"]
         resources: ["pods","deployments"]
         scope: "*"
     clientConfig:
