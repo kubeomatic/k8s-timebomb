@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/validate")
@@ -18,11 +20,17 @@ public class ValidationService {
     Logger logger = LoggerFactory.getLogger(ValidationService.class);
     @PostMapping({"/pods"})
     public String pods(@RequestBody PodAdmissionReview podAdmissionReview) throws JsonProcessingException {
+        if (! podAdmissionReview.getRequest().getOperation().toLowerCase().equals("create") || ! podAdmissionReview.getRequest().getResource().getResource().toLowerCase().equals("pods")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+        }
+
         ObjectMapper om = new ObjectMapper();
-        String uid = podAdmissionReview.getRequest().getUid();
         Status status = new Status();
         Response response = new Response();
         AdmissionReview admissionReview = new AdmissionReview();
+
+        String uid = podAdmissionReview.getRequest().getUid();
+
         String resourceMatch = podAdmissionReview.getRequest().getResource().getResource();
         if ( ! "pods".equals(resourceMatch)) {
             status.setCode(403);
@@ -44,16 +52,44 @@ public class ValidationService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        for (Container container : podAdmissionReview.getRequest().getObject().getSpec().getContainers())
-        {
-          logger.info(container.getName());
+        String podAdmissionData;
+        try {
+            podAdmissionData = om.writeValueAsString(podAdmissionReview);
+            logger.info(podAdmissionData);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-        logger.info(
-                "UID=" + podAdmissionReview.getRequest().getUid() +
-                " Namespace=" + podAdmissionReview.getRequest().getNamespace() +
-                " Name=" + podAdmissionReview.getRequest().getName() +
-                " Operation=" + podAdmissionReview.getRequest().getOperation());
-        logger.info("RESPONSEDATA " + responseData);
-        return responseData;
+
+        if ( admissionReview.getResponse().getAllowed())
+        {
+            if ( podAdmissionReview.getRequest().getObject() == null )
+            {
+                for (Container container : podAdmissionReview.getRequest().getOldObject().getSpec().getContainers())
+                {
+                    logger.info(container.getName());
+                }
+
+            } else
+            {
+                for (Container container : podAdmissionReview.getRequest().getObject().getSpec().getContainers())
+                {
+                    logger.info("Container " + container.getName());
+                }
+            }
+
+            logger.info(
+                    "UID=" + podAdmissionReview.getRequest().getUid() +
+                    " DRYRUN=" + podAdmissionReview.getRequest().getDryRun().toString() +
+                    " Namespace=" + podAdmissionReview.getRequest().getNamespace() +
+                    " Name=" + podAdmissionReview.getRequest().getName() +
+                    " Resource=" + podAdmissionReview.getRequest().getResource().getResource() +
+                    " Operation=" + podAdmissionReview.getRequest().getOperation());
+            logger.info("RESPONSEDATA " + responseData);
+            return responseData;
+        } else {
+            return responseData;
+        }
+
+
     }
 }
