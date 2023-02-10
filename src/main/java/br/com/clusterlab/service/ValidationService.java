@@ -1,5 +1,6 @@
-package br.com.clusterlab.services;
+package br.com.clusterlab.service;
 
+import br.com.clusterlab.controller.ValidationController;
 import br.com.clusterlab.dto.response.AdmissionReview;
 import br.com.clusterlab.dto.response.Response;
 import br.com.clusterlab.dto.response.Status;
@@ -7,19 +8,17 @@ import br.com.clusterlab.dto.validation.pod.Container;
 import br.com.clusterlab.dto.validation.pod.PodAdmissionReview;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-@RestController
-@RequestMapping("/validate")
 public class ValidationService {
-    Logger logger = LoggerFactory.getLogger(ValidationService.class);
-    @PostMapping({"/pods"})
-    public String pods(@RequestBody PodAdmissionReview podAdmissionReview) throws JsonProcessingException {
+
+
+    public static String validateCreatePods(PodAdmissionReview podAdmissionReview)
+    {
+        Logger logger = LoggerFactory.getLogger(ValidationController.class);
         if (! podAdmissionReview.getRequest().getOperation().toLowerCase().equals("create") || ! podAdmissionReview.getRequest().getResource().getResource().toLowerCase().equals("pods")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
         }
@@ -79,17 +78,15 @@ public class ValidationService {
 
             logger.info(
                     "UID=" + podAdmissionReview.getRequest().getUid() +
-                    " DRYRUN=" + podAdmissionReview.getRequest().getDryRun().toString() +
-                    " Namespace=" + podAdmissionReview.getRequest().getNamespace() +
-                    " Name=" + podAdmissionReview.getRequest().getName() +
-                    " Resource=" + podAdmissionReview.getRequest().getResource().getResource() +
-                    " Operation=" + podAdmissionReview.getRequest().getOperation());
+                            " DRYRUN=" + podAdmissionReview.getRequest().getDryRun().toString() +
+                            " Namespace=" + podAdmissionReview.getRequest().getNamespace() +
+                            " Name=" + podAdmissionReview.getRequest().getName() +
+                            " Resource=" + podAdmissionReview.getRequest().getResource().getResource() +
+                            " Operation=" + podAdmissionReview.getRequest().getOperation());
             logger.info("RESPONSEDATA " + responseData);
             return responseData;
         } else {
             return responseData;
         }
-
-
     }
 }

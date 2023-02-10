@@ -52,7 +52,6 @@ public class Request {
     private br.com.clusterlab.dto.validation.pod.Object object;
     @JsonProperty("oldObject")
     private br.com.clusterlab.dto.validation.pod.Object oldObject;
-//    private java.lang.Object oldObject;
     @JsonProperty("dryRun")
     private Boolean dryRun;
     @JsonProperty("options")
@@ -169,9 +168,6 @@ public class Request {
     public void setOldObject(br.com.clusterlab.dto.validation.pod.Object  oldObject) {
         this.oldObject = oldObject;
     }
-//    public void setOldObject(java.lang.Object oldObject) {
-//        this.oldObject = oldObject;
-//    }
 
     @JsonProperty("dryRun")
     public Boolean getDryRun() {
