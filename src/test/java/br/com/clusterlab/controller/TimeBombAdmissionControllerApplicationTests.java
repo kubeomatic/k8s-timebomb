@@ -1,4 +1,4 @@
-package br.com.clusterlab.services;
+package br.com.clusterlab.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -278,6 +278,7 @@ RUN "mvn compile jib:build -Dmaven.wagon.http.ssl.insecure=true -Dmaven.test.ski
 RUN "docker pull $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "docker image ls | grep -w $BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "kind load docker-image $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
+RUN "docker image ls | grep -w $BUILD_DST_IMAGE:$BUILD_TAG"
 RUN "kubectl get nodes"
 RUN "kubectl -n awh get all"
 RUN "kubectl -n awh delete -f awh-deploy.yml"
@@ -287,6 +288,7 @@ RUN "sleep 5; kubectl -n awh port-forward service/awh-service 8443:443" retry  &
 export PIDPF=$!
 #stern -n awh awh
 read
+RUN "killall kubectl"
 RUN "pkill -P $PIDPF"
 
 
