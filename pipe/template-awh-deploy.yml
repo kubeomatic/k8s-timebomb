@@ -1,17 +1,3 @@
-#apiVersion: v1
-#kind: Pod
-#metadata:
-#  name: awh
-#  labels:
-#    app.kubernetes.io/name: awh
-#spec:
-#  containers:
-#    - name: awh
-#      image: TEMPLATE_IMAGE
-#      ports:
-#        - containerPort: 8443
-#          name: awh-web-svc
-#---
 ---
 apiVersion: v1
 kind: Namespace
@@ -19,6 +5,62 @@ metadata:
   name: awh
   labels:
     admission-webhook: enabled
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: awh-secret
+  namespace: awh
+  annotations:
+    kubernetes.io/service-account.name: awh
+type: kubernetes.io/service-account-token
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: awh
+  namespace: awh
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-delete-pods
+  namespace: awh
+rules:
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["pods"]
+    verbs: ["delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: awh-delete-pods
+  namespace: awh
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-delete-pods
+  namespace: awh
+subjects:
+  - kind: ServiceAccount
+    name: awh
+    namespace: awh
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: awh-reader
+  namespace: awh
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+  - kind: ServiceAccount
+    name: awh
+    namespace: awh
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,9 +77,15 @@ spec:
       labels:
         app.kubernetes.io/name: awh
     spec:
+      serviceAccountName: awh
       containers:
         - image: TEMPLATE_DEPLOY_IMAGE
           name: awh
+          env:
+            - name: ENV_SERVICE_HOST
+              value: "10.96.0.1"
+            - name: ENV_SERVICE_PORT
+              value: "443"
           ports:
             - containerPort: 8443
               name: awh-web-svc
@@ -82,7 +130,7 @@ webhooks:
 #    timeoutSeconds: 5
     namespaceSelector:
       matchLabels:
-        admission-webhook: enabled
+        br.com.clusterlab.timebomb: enabled
     rules:
       - apiGroups: ["*"]
         apiVersions: ["v1"]
