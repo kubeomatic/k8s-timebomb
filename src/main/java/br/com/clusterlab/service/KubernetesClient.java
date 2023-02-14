@@ -1,4 +1,5 @@
 package br.com.clusterlab.service;
+import br.com.clusterlab.controller.ValidationController;
 import com.google.gson.reflect.TypeToken;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
@@ -9,34 +10,15 @@ import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.KubeConfig;
 import io.kubernetes.client.util.Watch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
 public class KubernetesClient {
-//    public static void getPods() throws IOException, ApiException {
-//        // file path to your KubeConfig
-//
-//        String kubeConfigPath = "/extra/kubeconfig";
-//
-//        // loading the out-of-cluster config, a kubeconfig from file-system
-//        ApiClient client =
-//                ClientBuilder.kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath))).build();
-//
-//        // set the global default api-client to the in-cluster one from above
-//        Configuration.setDefaultApiClient(client);
-//
-//        // the CoreV1Api loads default api-client from global configuration.
-//        CoreV1Api api = new CoreV1Api();
-//
-//        // invokes the CoreV1Api client
-//        V1PodList list =
-//                api.listPodForAllNamespaces(null, null, null, null, null, null, null, null, null, null);
-//        for (V1Pod item : list.getItems()) {
-//            System.out.println(item.getMetadata().getName());
-//        }
-//    }
+    public static Logger logger = LoggerFactory.getLogger(ValidationController.class);
     public static void getPodsInCluster() throws IOException, ApiException {
         // loading the in-cluster config, including:
         //   1. service-account CA
@@ -67,31 +49,23 @@ public class KubernetesClient {
                     System.out.println(item.getMetadata().getAnnotations().get("br.com.clusterlab.timebomb.timer"));
                     V1DeleteOptions v1DeleteOptions = new V1DeleteOptions();
                     v1DeleteOptions.setApiVersion("v1");
-                    v1DeleteOptions.setOrphanDependents(true);
-//                    api.deleteNamespacedPodCall(
-//                            item.getMetadata().getName(),
-//                            item.getMetadata().getNamespace(),
-//                            null,
-//                            null,
-//                            null,
-//                            null,
-//                            null,
-//                            null,
-//                            null
-//                    );
-                    V1Pod v1Pod = api.deleteNamespacedPod(
-                            item.getMetadata().getName(),
-                            item.getMetadata().getNamespace(),
-                            null,
-                            "false",
-                            null,
-                            null,
-                            null,
-                            v1DeleteOptions
-                    );
-
+                    V1Pod v1Pod = new V1Pod();
+                    v1DeleteOptions.setOrphanDependents(false);
+                    try {
+                        api.deleteNamespacedPod(
+                                item.getMetadata().getName(),
+                                item.getMetadata().getNamespace(),
+                                null,
+                                "false",
+                                null,
+                                null,
+                                null,
+                                v1DeleteOptions
+                        );
+                    } catch (Exception e) {
+                        logger.error(String.valueOf(e));
+                    }
                 }
-
             }
         }
     }
