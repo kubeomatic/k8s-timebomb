@@ -87,6 +87,6 @@ public class ValidationService {
     }
 
     public static String validateCreateDeployments(PodAdmissionReview podAdmissionReview) {
-        return "ok";
+        return "ok for deployment";
     }
 }
