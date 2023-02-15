@@ -49,7 +49,7 @@ public class ValidationControllerTest {
                 "CREATE",
                 List.of("Test-01","Test-02"));
 
-        mockMvc.perform(post("/validate/pods")
+        mockMvc.perform(post("/api/validation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(podAdmissionReviewData)
                 .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
@@ -64,7 +64,7 @@ public class ValidationControllerTest {
                 "DELETE",
                 List.of("Test-01","Test-02"));
 
-        mockMvc.perform(post("/validate/pods")
+        mockMvc.perform(post("/api/validation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(podAdmissionReviewData)
                 .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());
@@ -79,10 +79,10 @@ public class ValidationControllerTest {
                 "CREATE",
                 List.of("Test-01","Test-02"));
 
-        mockMvc.perform(post("/validate/pods")
+        mockMvc.perform(post("/api/validation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(podAdmissionReviewData)
-                .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());
+                .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
     @DisplayName("Test DELETE DEPLOYMENT")
     @Test
@@ -94,7 +94,7 @@ public class ValidationControllerTest {
                 "DELETE",
                 List.of("Test-01","Test-02"));
 
-        mockMvc.perform(post("/validate/pods")
+        mockMvc.perform(post("/api/validation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(podAdmissionReviewData)
                 .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());

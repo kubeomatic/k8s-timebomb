@@ -18,10 +18,8 @@ public class ValidationService {
 
     public static String validateCreatePods(PodAdmissionReview podAdmissionReview)
     {
+
         Logger logger = LoggerFactory.getLogger(ValidationController.class);
-        if (! podAdmissionReview.getRequest().getOperation().toLowerCase().equals("create") || ! podAdmissionReview.getRequest().getResource().getResource().toLowerCase().equals("pods")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
-        }
 
         ObjectMapper om = new ObjectMapper();
         Status status = new Status();
@@ -84,9 +82,11 @@ public class ValidationService {
                             " Resource=" + podAdmissionReview.getRequest().getResource().getResource() +
                             " Operation=" + podAdmissionReview.getRequest().getOperation());
             logger.info("RESPONSEDATA " + responseData);
-            return responseData;
-        } else {
-            return responseData;
         }
+        return responseData;
+    }
+
+    public static String validateCreateDeployments(PodAdmissionReview podAdmissionReview) {
+        return "ok";
     }
 }

@@ -63,7 +63,7 @@ public class KubernetesClient {
                                 v1DeleteOptions
                         );
                     } catch (Exception e) {
-                        logger.error(String.valueOf(e));
+                        logger.error("Check Service account permission. App may be without privilege to read or delete resources STACK=" + String.valueOf(e));
                     }
                 }
             }

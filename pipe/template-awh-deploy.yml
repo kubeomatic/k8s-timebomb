@@ -262,12 +262,12 @@ webhooks:
       - apiGroups: ["*"]
         apiVersions: ["v1"]
         operations: ["CREATE"]
-        resources: ["pods"]
+        resources: ["pods","deployments"]
         scope: "*"
     clientConfig:
       service:
         namespace: awh
         name: awh-service
-        path: /validate/pods
+        path: /api/validation
         port: 443
       caBundle: TEMPLATE_VALIDATINGWH_CAROOT
