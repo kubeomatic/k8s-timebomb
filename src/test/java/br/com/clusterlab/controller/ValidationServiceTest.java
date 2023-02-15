@@ -4,6 +4,7 @@ import br.com.clusterlab.dto.validation.pod.*;
 import br.com.clusterlab.dto.validation.pod.Object;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.bytebuddy.implementation.bind.annotation.Super;
 
 import java.util.ArrayList;
 import java.util.List;
