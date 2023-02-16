@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
+    "template",
     "volumes",
     "containers",
     "restartPolicy",
@@ -30,6 +31,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 @Generated("jsonschema2pojo")
 public class Spec {
+    @JsonProperty("template")
+    private Template template;
 
     @JsonProperty("volumes")
     private List<Volume> volumes;
@@ -59,6 +62,15 @@ public class Spec {
     private String preemptionPolicy;
     @JsonIgnore
     private Map<String, java.lang.Object> additionalProperties = new LinkedHashMap<String, java.lang.Object>();
+    @JsonProperty("template")
+    public Template getTemplate() {
+        return template;
+    }
+
+    @JsonProperty("template")
+    public void setTemplate(Template template) {
+        this.template = template;
+    }
 
     @JsonProperty("volumes")
     public List<Volume> getVolumes() {

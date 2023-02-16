@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "uid",
     "creationTimestamp",
     "labels",
+    "annotations",
     "ownerReferences",
     "managedFields"
 })
@@ -34,6 +35,8 @@ public class Metadata {
     private String namespace;
     @JsonProperty("uid")
     private String uid;
+    @JsonProperty("annotations")
+    private Annotations annotations;
     @JsonProperty("creationTimestamp")
     private String creationTimestamp;
     @JsonProperty("labels")
@@ -44,6 +47,15 @@ public class Metadata {
     private List<ManagedField> managedFields;
     @JsonIgnore
     private Map<String, java.lang.Object> additionalProperties = new LinkedHashMap<String, java.lang.Object>();
+    @JsonProperty("annotations")
+    public Annotations getAnnotations() {
+        return annotations;
+    }
+
+    @JsonProperty("annotations")
+    public void setAnnotations(Annotations annotations) {
+        this.annotations = annotations;
+    }
 
     @JsonProperty("name")
     public String getName() {

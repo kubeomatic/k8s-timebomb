@@ -16,19 +16,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "admission-webhook",
     "app",
     "pod-template-hash",
-    "timebomb-timeout"
+    "timebomb-timeout",
+    "br.com.clusterlab.timebomb"
 })
 @Generated("jsonschema2pojo")
 public class Labels {
 
     @JsonProperty("admission-webhook")
     private String admissionWebhook;
+    @JsonProperty("br.com.clusterlab.timebomb")
+    private String brComClusterlabTimebomb;
     @JsonProperty("app")
     private String app;
     @JsonProperty("pod-template-hash")
     private String podTemplateHash;
     @JsonProperty("timebomb-timeout")
     private String timebombTimeout;
+
     @JsonIgnore
     private Map<String, java.lang.Object> additionalProperties = new LinkedHashMap<String, java.lang.Object>();
 
@@ -70,6 +74,15 @@ public class Labels {
     @JsonProperty("timebomb-timeout")
     public void setTimebombTimeout(String timebombTimeout) {
         this.timebombTimeout = timebombTimeout;
+    }
+    @JsonProperty("br.com.clusterlab.timebomb")
+    public String getBrComClusterlabTimebomb() {
+        return brComClusterlabTimebomb;
+    }
+
+    @JsonProperty("br.com.clusterlab.timebomb")
+    public void setBrComClusterlabTimebomb(String brComClusterlabTimebomb) {
+        this.brComClusterlabTimebomb = brComClusterlabTimebomb;
     }
 
     @JsonAnyGetter
