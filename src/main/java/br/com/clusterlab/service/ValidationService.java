@@ -1,33 +1,23 @@
 package br.com.clusterlab.service;
 
 import br.com.clusterlab.controller.ValidationController;
-import br.com.clusterlab.dto.response.AdmissionReview;
-import br.com.clusterlab.dto.response.Response;
-import br.com.clusterlab.dto.response.Status;
-import br.com.clusterlab.dto.validation.pod.Container;
-import br.com.clusterlab.dto.validation.pod.PodAdmissionReview;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import br.com.clusterlab.dto.review.AdmissionReview;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
 
 public class ValidationService {
 
 
-    public static String validateCreatePods(PodAdmissionReview podAdmissionReview)
+    public static String validateCreatePods(AdmissionReview admissionReview)
     {
 
         Logger logger = LoggerFactory.getLogger(ValidationController.class);
 
-        if (validateLabel(podAdmissionReview,"br.com.clusterlab.timebomb") && validateAnnotation(podAdmissionReview,"br.com.clusterlab.timebomb.valid")){
-            return createAlowedAdmissionResponse(podAdmissionReview);
+        if (validateLabel(admissionReview,"br.com.clusterlab.timebomb") && validateAnnotation(admissionReview,"br.com.clusterlab.timebomb.valid")){
+            return createAlowedAdmissionResponse(admissionReview);
         }
         else {
-            return createDeniedAdmissionResponse(podAdmissionReview);
+            return createDeniedAdmissionResponse(admissionReview);
         }
 
 //        ObjectMapper om = new ObjectMapper();
@@ -95,23 +85,24 @@ public class ValidationService {
 //        return "ok";
     }
 
-    private static String createDeniedAdmissionResponse(PodAdmissionReview podAdmissionReview) {
+    private static String createDeniedAdmissionResponse(AdmissionReview admissionReview) {
         return "nok";
     }
 
-    private static String createAlowedAdmissionResponse(PodAdmissionReview podAdmissionReview) {
+    private static String createAlowedAdmissionResponse(AdmissionReview admissionReview) {
         return "ok";
     }
 
-    static boolean validateAnnotation(PodAdmissionReview podAdmissionReview, String annotationValidity){
-        String state = podAdmissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
-        System.out.println(state);
+    static boolean validateAnnotation(AdmissionReview admissionReview, String annotationValidity){
+//        String state = podAdmissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
+//        System.out.println(state);
         return true;
     }
-    static boolean validateLabel(PodAdmissionReview podAdmissionReview, String labelEnabled){
-        return podAdmissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
+    static boolean validateLabel(AdmissionReview admissionReview, String labelEnabled){
+//        return podAdmissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
+        return true;
     }
-    public static String validateCreateDeployments(PodAdmissionReview podAdmissionReview) {
+    public static String validateCreateDeployments(AdmissionReview admissionReview) {
         return "ok for deployment";
     }
 }

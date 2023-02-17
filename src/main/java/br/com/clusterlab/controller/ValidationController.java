@@ -1,5 +1,5 @@
 package br.com.clusterlab.controller;
-import br.com.clusterlab.dto.validation.pod.PodAdmissionReview;
+import br.com.clusterlab.dto.review.AdmissionReview;
 import br.com.clusterlab.service.ValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +18,13 @@ import static br.com.clusterlab.service.Epoch.epochToDate;
 public class ValidationController {
 
     @PostMapping({"/validation"})
-    public String pods(@RequestBody PodAdmissionReview podAdmissionReview){
+    public String pods(@RequestBody AdmissionReview admissionReview){
         Logger logger = LoggerFactory.getLogger(ValidationController.class);
-        String resourceName = podAdmissionReview.getRequest().getResource().getResource().toString();
+        String resourceName = admissionReview.getRequest().getResource().getResource().toString();
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
         boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
         boolean validRequest = validResourcePod || validResourceDeployment;
-        String operationName = podAdmissionReview.getRequest().getOperation().toString();
+        String operationName = admissionReview.getRequest().getOperation().toString();
         boolean validaOperation = operationName.equalsIgnoreCase("create");
 
         if ( ! validaOperation  ||  ! validRequest ) {
@@ -32,10 +32,10 @@ public class ValidationController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
         }
         if ( validResourcePod ){
-            return ValidationService.validateCreatePods(podAdmissionReview);
+            return ValidationService.validateCreatePods(admissionReview);
         }
         if ( validResourceDeployment ){
-            return ValidationService.validateCreateDeployments(podAdmissionReview);
+            return ValidationService.validateCreateDeployments(admissionReview);
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
     }
