@@ -31,11 +31,8 @@ public class ValidationController {
             logger.error("Operation or resource invalid Resource=" + resourceName+ " Operation=" + operationName);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
         }
-        if ( validResourcePod ){
-            return ValidationService.validateCreatePods(admissionReview);
-        }
-        if ( validResourceDeployment ){
-            return ValidationService.validateCreateDeployments(admissionReview);
+        if ( validResourcePod || validResourceDeployment ){
+            return ValidationService.validateCreate(admissionReview);
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
     }

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "operation",
     "userInfo",
     "object",
+    "oldObject",
     "dryRun",
     "options"
 })
@@ -49,6 +50,8 @@ public class Request {
     private UserInfo userInfo;
     @JsonProperty("object")
     private br.com.clusterlab.dto.review.Object object;
+    @JsonProperty("oldObject")
+    private OldObject oldObject;
     @JsonProperty("dryRun")
     private Boolean dryRun;
     @JsonProperty("options")
@@ -154,6 +157,16 @@ public class Request {
     @JsonProperty("object")
     public void setObject(br.com.clusterlab.dto.review.Object object) {
         this.object = object;
+    }
+
+    @JsonProperty("oldObject")
+    public OldObject getOldObject() {
+        return oldObject;
+    }
+
+    @JsonProperty("oldObject")
+    public void setOldObject(OldObject oldObject) {
+        this.oldObject = oldObject;
     }
 
     @JsonProperty("dryRun")
