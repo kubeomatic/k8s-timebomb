@@ -39,9 +39,9 @@ public class ValidationControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
-    @DisplayName("Test CREATE POD")
+    @DisplayName("Test CREATE POD WITHOUT VALIDTY DATA")
     @Test
-    public void testPodCreation() throws Exception {
+    public void testPodCreationWithNoValidityData() throws Exception {
         String podAdmissionReviewData = ValidationServiceTest.podAdmissionBuilder(
                 "awh",
                 "pod-test",

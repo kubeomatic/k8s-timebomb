@@ -57,8 +57,9 @@
         ],
         "generation": 1,
         "annotations": {
-          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"nginx\",\"br.com.clusterlab.timebomb\":\"enabled\"},\"name\":\"nginx-deployment\",\"namespace\":\"nginx\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"annotations\":{\"br.com.clusterlab.timebomb.timer\":\"5h\",\"br.com.clusterlab.timebomb.valid\":\"1675822002\"},\"labels\":{\"app\":\"nginx\",\"br.com.clusterlab.timebomb\":\"enabled\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
-        }
+          "br.com.clusterlab.timebomb.timer": "5h",
+          "br.com.clusterlab.timebomb.valid": "1677685022"
+        },
       },
       "spec": {
         "replicas": 3,

@@ -24,9 +24,7 @@ public class ValidationService {
             return getAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
         }
         else {
-            String validityString = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
-            Date expiredDate = Epoch.epochToDate(parseLong(validityString));
-            return getAdmissionResponse(admissionReview, "Resource NOT Authorized, expired validity " + validityString + "=" + expiredDate, true, 403);
+            return getAdmissionResponse(admissionReview, "Resource NOT Authorized, invalid or expired validity ", false, 403);
         }
     }
 
@@ -52,22 +50,62 @@ public class ValidationService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        String adminssionReviewData;
+        try{
+            adminssionReviewData = om.writeValueAsString(admissionReview);
+        } catch (JsonProcessingException e)
+        {
+            throw new RuntimeException(e);
+        }
+        logger.info(responseData);
+        logger.info(adminssionReviewData);
         return responseData;
     }
 
     static boolean validateAnnotation(AdmissionReview admissionReview, String annotationValidity){
-        String validityString = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
-        Long validityLong = parseLong(validityString);
-        if ( validityLong < Epoch.dateToEpoch()){
-            logger.info(validityString + " < " + Epoch.dateToEpoch());
+        try{
+            String validityString;
+            if ( admissionReview.getRequest().getObject().getMetadata().getAnnotations().getBrComClusterlabTimebombValid() == null)
+            {
+                validityString = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
+            } else {
+                validityString = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
+            }
+
+            Long validityLong = parseLong(validityString);
+            if ( validityLong < Epoch.dateToEpoch()){
+                logger.info(validityString + " < " + Epoch.dateToEpoch());
+                return false;
+            } else {
+                logger.info(validityString + " <= " + Epoch.dateToEpoch());
+                return true;
+            }
+        } catch (NullPointerException e){
+            logger.error("Annotation br.com.clusterlab.timebomb.valid may be empty, " + e.getMessage());
             return false;
-        } else {
-            logger.info(validityString + " <= " + Epoch.dateToEpoch());
-            return true;
+        } catch (NumberFormatException e){
+            logger.error("Annotation br.com.clusterlab.timebomb.valid may be empty, " + e.getMessage());
+            return false;
         }
+
     }
     static boolean validateLabel(AdmissionReview admissionReview, String labelEnabled){
-        return admissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
+        try{
+            if (admissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb() == null)
+            {
+                return admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
+            } else {
+                return admissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
+            }
+
+        } catch (NullPointerException e){
+            logger.error("Label br.com.clusterlab.timebomb may be empty, " + e.getMessage());
+            return false;
+        } catch (NumberFormatException e){
+            logger.error("Label br.com.clusterlab.timebomb may be empty, " + e.getMessage());
+            return false;
+        }
+
     }
 
 }

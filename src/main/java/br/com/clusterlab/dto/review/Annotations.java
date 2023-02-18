@@ -13,24 +13,37 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "kubectl.kubernetes.io/last-applied-configuration"
+    "br.com.clusterlab.timebomb.timer",
+    "br.com.clusterlab.timebomb.valid"
 })
 @Generated("jsonschema2pojo")
 public class Annotations {
 
-    @JsonProperty("kubectl.kubernetes.io/last-applied-configuration")
-    private String kubectlKubernetesIoLastAppliedConfiguration;
+    @JsonProperty("br.com.clusterlab.timebomb.timer")
+    private String brComClusterlabTimebombTimer;
+    @JsonProperty("br.com.clusterlab.timebomb.valid")
+    private String brComClusterlabTimebombValid;
     @JsonIgnore
     private Map<String, java.lang.Object> additionalProperties = new LinkedHashMap<String, java.lang.Object>();
 
-    @JsonProperty("kubectl.kubernetes.io/last-applied-configuration")
-    public String getKubectlKubernetesIoLastAppliedConfiguration() {
-        return kubectlKubernetesIoLastAppliedConfiguration;
+    @JsonProperty("br.com.clusterlab.timebomb.timer")
+    public String getBrComClusterlabTimebombTimer() {
+        return brComClusterlabTimebombTimer;
     }
 
-    @JsonProperty("kubectl.kubernetes.io/last-applied-configuration")
-    public void setKubectlKubernetesIoLastAppliedConfiguration(String kubectlKubernetesIoLastAppliedConfiguration) {
-        this.kubectlKubernetesIoLastAppliedConfiguration = kubectlKubernetesIoLastAppliedConfiguration;
+    @JsonProperty("br.com.clusterlab.timebomb.timer")
+    public void setBrComClusterlabTimebombTimer(String brComClusterlabTimebombTimer) {
+        this.brComClusterlabTimebombTimer = brComClusterlabTimebombTimer;
+    }
+
+    @JsonProperty("br.com.clusterlab.timebomb.valid")
+    public String getBrComClusterlabTimebombValid() {
+        return brComClusterlabTimebombValid;
+    }
+
+    @JsonProperty("br.com.clusterlab.timebomb.valid")
+    public void setBrComClusterlabTimebombValid(String brComClusterlabTimebombValid) {
+        this.brComClusterlabTimebombValid = brComClusterlabTimebombValid;
     }
 
     @JsonAnyGetter
