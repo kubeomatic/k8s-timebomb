@@ -254,7 +254,7 @@ webhooks:
   - name: "awh-service.awh.svc.cluster.local"
     admissionReviewVersions: [ "v1" ]
     sideEffects: None
-#    timeoutSeconds: 5
+    #    timeoutSeconds: 5
     namespaceSelector:
       matchLabels:
         br.com.clusterlab.timebomb: enabled
@@ -269,5 +269,31 @@ webhooks:
         namespace: awh
         name: awh-service
         path: /api/validation
+        port: 443
+      caBundle: TEMPLATE_VALIDATINGWH_CAROOT
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: "awh-service.awh.svc.cluster.local"
+webhooks:
+  - name: "awh-service.awh.svc.cluster.local"
+    admissionReviewVersions: [ "v1" ]
+    sideEffects: None
+    #    timeoutSeconds: 5
+    namespaceSelector:
+      matchLabels:
+        br.com.clusterlab.timebomb: enabled
+    rules:
+      - apiGroups: ["*"]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["deployments"]
+        scope: "*"
+    clientConfig:
+      service:
+        namespace: awh
+        name: awh-service
+        path: /api/mutation
         port: 443
       caBundle: TEMPLATE_VALIDATINGWH_CAROOT
