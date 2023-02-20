@@ -1,10 +1,9 @@
 package br.com.clusterlab.controller;
 
-import br.com.clusterlab.dto.validation.pod.*;
-import br.com.clusterlab.dto.validation.pod.Object;
+import br.com.clusterlab.dto.review.*;
+import br.com.clusterlab.dto.review.Object;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.bytebuddy.implementation.bind.annotation.Super;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class ValidationServiceTest {
     public static String podAdmissionBuilder(String namespaceName, String podName, String resourceName, String actionName, List<String> containersName){
         String uuid = String.valueOf(UUID.randomUUID());
 
-        PodAdmissionReview podAdmissionReview = new PodAdmissionReview();
+        AdmissionReview admissionReview = new AdmissionReview();
         Request request = new Request();
         Resource resource = new Resource();
         Object object = new Object();
@@ -40,12 +39,12 @@ public class ValidationServiceTest {
         request.setNamespace(namespaceName);
         request.setName(podName);
 
-        podAdmissionReview.setRequest(request);
+        admissionReview.setRequest(request);
 
         ObjectMapper om = new ObjectMapper();
 
         try {
-            return om.writeValueAsString(podAdmissionReview);
+            return om.writeValueAsString(admissionReview);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
