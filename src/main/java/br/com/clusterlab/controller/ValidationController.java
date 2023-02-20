@@ -1,6 +1,9 @@
 package br.com.clusterlab.controller;
 import br.com.clusterlab.dto.review.AdmissionReview;
 import br.com.clusterlab.service.ValidationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,7 +21,7 @@ import static br.com.clusterlab.service.Epoch.epochToDate;
 public class ValidationController {
 
     @PostMapping({"/validation"})
-    public String pods(@RequestBody AdmissionReview admissionReview){
+    public String validation(@RequestBody AdmissionReview admissionReview){
         Logger logger = LoggerFactory.getLogger(ValidationController.class);
         String resourceName = admissionReview.getRequest().getResource().getResource().toString();
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
@@ -36,10 +39,11 @@ public class ValidationController {
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
     }
-    @GetMapping("/time")
-    public String time(){
-        Long epochString = 1676485977L;
-        Date agora = new Date();
-        return String.valueOf(epochToDate(epochString));
+    @PostMapping("/mutation")
+    public String mutation(@RequestBody ObjectNode request) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        String data = om.writeValueAsString(request);
+        System.out.println(data);
+        return "ok";
     }
 }
