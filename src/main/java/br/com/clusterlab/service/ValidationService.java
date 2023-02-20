@@ -64,12 +64,17 @@ public class ValidationService {
 
     static boolean validateAnnotation(AdmissionReview admissionReview, String annotationValidity){
         try{
-            String validityString;
-            if ( admissionReview.getRequest().getObject().getMetadata().getAnnotations().getBrComClusterlabTimebombValid() == null)
-            {
-                validityString = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
-            } else {
+            String validityString = null;
+            String resourceName = admissionReview.getRequest().getResource().getResource().toString();
+            boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
+            boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
+
+            if (validResourcePod == true && validResourceDeployment == false) {
+
                 validityString = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
+            }
+            if (validResourceDeployment == true && validResourcePod == false) {
+                validityString = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getBrComClusterlabTimebombValid();
             }
 
             Long validityLong = parseLong(validityString);
@@ -89,22 +94,28 @@ public class ValidationService {
         }
 
     }
-    static boolean validateLabel(AdmissionReview admissionReview, String labelEnabled){
-        try{
-            if (admissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb() == null)
-            {
-                return admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
-            } else {
+    static boolean validateLabel(AdmissionReview admissionReview, String labelEnabled) {
+        String resourceName = admissionReview.getRequest().getResource().getResource().toString();
+        boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
+        boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
+        try {
+
+            if (validResourcePod == true && validResourceDeployment == false) {
+
                 return admissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
             }
-
-        } catch (NullPointerException e){
+            if (validResourceDeployment == true && validResourcePod == false) {
+                return admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
+            }
+            
+        } catch (NullPointerException e) {
             logger.error("Label br.com.clusterlab.timebomb may be empty, " + e.getMessage());
             return false;
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             logger.error("Label br.com.clusterlab.timebomb may be empty, " + e.getMessage());
             return false;
         }
+        return false;
 
     }
 
