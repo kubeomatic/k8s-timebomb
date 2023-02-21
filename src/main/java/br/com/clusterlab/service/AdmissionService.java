@@ -1,6 +1,6 @@
 package br.com.clusterlab.service;
 
-import br.com.clusterlab.controller.ValidationController;
+import br.com.clusterlab.controller.AdmissionController;
 import br.com.clusterlab.dto.response.AdmissionResponse;
 import br.com.clusterlab.dto.response.Response;
 import br.com.clusterlab.dto.response.Status;
@@ -10,25 +10,40 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-
 import static java.lang.Long.parseLong;
 
-public class ValidationService {
-    static Logger logger = LoggerFactory.getLogger(ValidationController.class);
+public class AdmissionService {
+    static Logger logger = LoggerFactory.getLogger(AdmissionController.class);
 
-
-    public static String validateCreate(AdmissionReview admissionReview)
-    {
-        if (validateLabel(admissionReview,"br.com.clusterlab.timebomb") && validateAnnotation(admissionReview,"br.com.clusterlab.timebomb.valid")){
-            return getAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
+    public static AdmissionResponse mutateAdmissionReview(AdmissionReview admissionReview){
+        if (validateLabel(admissionReview,"br.com.clusterlab.timebomb")){
+            return getMutateAdmissionResponse(admissionReview);
         }
         else {
-            return getAdmissionResponse(admissionReview, "Resource NOT Authorized, invalid or expired validity ", false, 403);
+            return getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
         }
     }
 
-    private static String getAdmissionResponse(AdmissionReview admissionReview,String message, Boolean allowed, Integer responseCode) {
+
+    public static AdmissionResponse validateAdmissionReview(AdmissionReview admissionReview)
+    {
+        if (validateLabel(admissionReview,"br.com.clusterlab.timebomb") && validateAnnotation(admissionReview,"br.com.clusterlab.timebomb.valid")){
+            return getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
+        }
+        else {
+            return getValidatedAdmissionResponse(admissionReview, "Resource NOT Authorized, invalid or expired validity ", false, 403);
+        }
+    }
+    private static AdmissionResponse getMutateAdmissionResponse(AdmissionReview admissionReview){
+        AdmissionResponse admissionResponse = getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
+        Response response = admissionResponse.getResponse();
+        response.setPatch("W3sib3AiOiAiYWRkIiwgInBhdGgiOiAiL3NwZWMvcmVwbGljYXMiLCAidmFsdWUiOiAzfV0=");
+        response.setPatchType("JSONPatch");
+        admissionResponse.setResponse(response);
+        return admissionResponse;
+    }
+
+    private static AdmissionResponse getValidatedAdmissionResponse(AdmissionReview admissionReview, String message, Boolean allowed, Integer responseCode) {
         ObjectMapper om = new ObjectMapper();
         Status status = new Status();
         Response response = new Response();
@@ -43,23 +58,11 @@ public class ValidationService {
         response.setUid(uid);
         response.setStatus(status);
 
+        admissionResponse.setApiVersion("admission.k8s.io/v1");
+        admissionResponse.setKind("AdmissionReview");
         admissionResponse.setResponse(response);
-        String responseData;
-        try {
-            responseData = om.writeValueAsString(admissionResponse);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        String adminssionReviewData;
-        try{
-            adminssionReviewData = om.writeValueAsString(admissionReview);
-        } catch (JsonProcessingException e)
-        {
-            throw new RuntimeException(e);
-        }
-        logger.info(responseData);
-        logger.info(adminssionReviewData);
-        return responseData;
+
+        return admissionResponse;
     }
 
     static boolean validateAnnotation(AdmissionReview admissionReview, String annotationValidity){
@@ -101,10 +104,8 @@ public class ValidationService {
         try {
 
             if (validResourcePod == true && validResourceDeployment == false) {
-
                 return admissionReview.getRequest().getObject().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
-            }
-            if (validResourceDeployment == true && validResourcePod == false) {
+            } else {
                 return admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getBrComClusterlabTimebomb().equalsIgnoreCase("enabled");
             }
             
@@ -115,7 +116,6 @@ public class ValidationService {
             logger.error("Label br.com.clusterlab.timebomb may be empty, " + e.getMessage());
             return false;
         }
-        return false;
 
     }
 

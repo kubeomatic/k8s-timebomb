@@ -1,24 +1,19 @@
 package br.com.clusterlab.service;
-import br.com.clusterlab.controller.ValidationController;
-import com.google.gson.reflect.TypeToken;
+import br.com.clusterlab.controller.AdmissionController;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.ClientBuilder;
-import io.kubernetes.client.util.Config;
-import io.kubernetes.client.util.KubeConfig;
-import io.kubernetes.client.util.Watch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
 public class KubernetesClient {
-    public static Logger logger = LoggerFactory.getLogger(ValidationController.class);
+    public static Logger logger = LoggerFactory.getLogger(AdmissionController.class);
     public static void getPodsInCluster() throws IOException, ApiException {
         // loading the in-cluster config, including:
         //   1. service-account CA

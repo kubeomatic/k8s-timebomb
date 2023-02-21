@@ -21,9 +21,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AdmissionResponse {
 
     @JsonProperty("apiVersion")
-    private String apiVersion = "admission.k8s.io/v1";
+    private String apiVersion;
     @JsonProperty("kind")
-    private String kind = "AdmissionReview";
+    private String kind;
     @JsonProperty("response")
     private Response response;
     @JsonIgnore

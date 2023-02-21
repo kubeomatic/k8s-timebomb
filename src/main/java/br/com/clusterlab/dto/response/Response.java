@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "uid",
     "allowed",
+    "patchType",
+    "patch",
     "status"
 })
 @Generated("jsonschema2pojo")
@@ -24,6 +26,10 @@ public class Response {
     private String uid;
     @JsonProperty("allowed")
     private Boolean allowed;
+    @JsonProperty("patchType")
+    private String patchType;
+    @JsonProperty("patch")
+    private String patch;
     @JsonProperty("status")
     private Status status;
     @JsonIgnore
@@ -47,6 +53,26 @@ public class Response {
     @JsonProperty("allowed")
     public void setAllowed(Boolean allowed) {
         this.allowed = allowed;
+    }
+
+    @JsonProperty("patchType")
+    public String getPatchType() {
+        return patchType;
+    }
+
+    @JsonProperty("patchType")
+    public void setPatchType(String patchType) {
+        this.patchType = patchType;
+    }
+
+    @JsonProperty("patch")
+    public String getPatch() {
+        return patch;
+    }
+
+    @JsonProperty("patch")
+    public void setPatch(String patch) {
+        this.patch = patch;
     }
 
     @JsonProperty("status")

@@ -255,6 +255,7 @@ webhooks:
     admissionReviewVersions: [ "v1" ]
     sideEffects: None
     #    timeoutSeconds: 5
+    failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
         br.com.clusterlab.timebomb: enabled
@@ -281,6 +282,8 @@ webhooks:
     admissionReviewVersions: [ "v1" ]
     sideEffects: None
     #    timeoutSeconds: 5
+    reinvocationPolicy: Never
+    failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
         br.com.clusterlab.timebomb: enabled
