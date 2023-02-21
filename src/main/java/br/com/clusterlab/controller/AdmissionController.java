@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+
 import static br.com.clusterlab.service.Epoch.dateToEpoch;
 
 
@@ -18,7 +20,7 @@ public class AdmissionController {
     Logger logger = LoggerFactory.getLogger(AdmissionController.class);
 
     @PostMapping({"/validation"})
-    public AdmissionResponse validation(@RequestBody AdmissionReview admissionReview){
+    public AdmissionResponse validation(@RequestBody AdmissionReview admissionReview) throws IOException {
         String resourceName = admissionReview.getRequest().getResource().getResource().toString();
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
         boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
@@ -36,7 +38,7 @@ public class AdmissionController {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
     }
     @PostMapping("/mutation")
-    public AdmissionResponse mutation(@RequestBody AdmissionReview admissionReview) throws JsonProcessingException {
+    public AdmissionResponse mutation(@RequestBody AdmissionReview admissionReview) throws IOException {
 
         String resourceName = admissionReview.getRequest().getResource().getResource().toString();
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
