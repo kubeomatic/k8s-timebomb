@@ -14,15 +14,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "app",
-    "br.com.clusterlab.timebomb"
+    "kubeomatic.io-timebomb"
 })
 @Generated("jsonschema2pojo")
 public class Labels {
 
     @JsonProperty("app")
     private String app;
-    @JsonProperty("br.com.clusterlab.timebomb")
-    private String brComClusterlabTimebomb;
+    @JsonProperty("kubeomatic.io-timebomb")
+    private String kubeomaticIoTimebomb;
     @JsonIgnore
     private Map<String, java.lang.Object> additionalProperties = new LinkedHashMap<String, java.lang.Object>();
 
@@ -36,14 +36,14 @@ public class Labels {
         this.app = app;
     }
 
-    @JsonProperty("br.com.clusterlab.timebomb")
-    public String getBrComClusterlabTimebomb() {
-        return brComClusterlabTimebomb;
+    @JsonProperty("kubeomatic.io-timebomb")
+    public String getKubeomaticIoTimebomb() {
+        return kubeomaticIoTimebomb;
     }
 
-    @JsonProperty("br.com.clusterlab.timebomb")
-    public void setBrComClusterlabTimebomb(String brComClusterlabTimebomb) {
-        this.brComClusterlabTimebomb = brComClusterlabTimebomb;
+    @JsonProperty("kubeomatic.io-timebomb")
+    public void setKubeomaticIoTimebomb(String kubeomaticIoTimebomb) {
+        this.kubeomaticIoTimebomb = kubeomaticIoTimebomb;
     }
 
     @JsonAnyGetter

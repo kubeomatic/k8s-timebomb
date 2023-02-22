@@ -258,7 +258,7 @@ webhooks:
     failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
-        br.com.clusterlab.timebomb: enabled
+        kubeomatic.io-timebomb: "enabled"
     rules:
       - apiGroups: ["*"]
         apiVersions: ["v1"]
@@ -286,7 +286,7 @@ webhooks:
     failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
-        br.com.clusterlab.timebomb: enabled
+        kubeomatic.io-timebomb: "enabled"
     rules:
       - apiGroups: ["*"]
         apiVersions: ["v1"]

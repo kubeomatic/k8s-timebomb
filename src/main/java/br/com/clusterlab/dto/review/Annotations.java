@@ -13,37 +13,76 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "br.com.clusterlab.timebomb.timer",
-    "br.com.clusterlab.timebomb.valid"
+    "kubeomatic.io-timebomb-timer",
+    "kubeomatic.io-timebomb-valid",
+    "kubeomatic.io-timebomb-valid-human",
+    "kubeomatic.io-timebomb-sku",
+    "kubeomatic.io-timebomb-description"
 })
 @Generated("jsonschema2pojo")
 public class Annotations {
 
-    @JsonProperty("br.com.clusterlab.timebomb.timer")
-    private String brComClusterlabTimebombTimer;
-    @JsonProperty("br.com.clusterlab.timebomb.valid")
-    private String brComClusterlabTimebombValid;
+    @JsonProperty("kubeomatic.io-timebomb-timer")
+    private String kubeomaticIoTimebombTimer;
+    @JsonProperty("kubeomatic.io-timebomb-valid")
+    private String kubeomaticIoTimebombValid;
+    @JsonProperty("kubeomatic.io-timebomb-valid-human")
+    private String kubeomaticIoTimebombValidHuman;
+    @JsonProperty("kubeomatic.io-timebomb-sku")
+    private String kubeomaticIoTimebombSku;
+    @JsonProperty("kubeomatic.io-timebomb-description")
+    private String kubeomaticIoTimebombDescription;
     @JsonIgnore
     private Map<String, java.lang.Object> additionalProperties = new LinkedHashMap<String, java.lang.Object>();
 
-    @JsonProperty("br.com.clusterlab.timebomb.timer")
-    public String getBrComClusterlabTimebombTimer() {
-        return brComClusterlabTimebombTimer;
+    @JsonProperty("kubeomatic.io-timebomb-timer")
+    public String getKubeomaticIoTimebombTimer() {
+        return kubeomaticIoTimebombTimer;
     }
 
-    @JsonProperty("br.com.clusterlab.timebomb.timer")
-    public void setBrComClusterlabTimebombTimer(String brComClusterlabTimebombTimer) {
-        this.brComClusterlabTimebombTimer = brComClusterlabTimebombTimer;
+    @JsonProperty("kubeomatic.io-timebomb-timer")
+    public void setKubeomaticIoTimebombTimer(String kubeomaticIoTimebombTimer) {
+        this.kubeomaticIoTimebombTimer = kubeomaticIoTimebombTimer;
     }
 
-    @JsonProperty("br.com.clusterlab.timebomb.valid")
-    public String getBrComClusterlabTimebombValid() {
-        return brComClusterlabTimebombValid;
+    @JsonProperty("kubeomatic.io-timebomb-valid")
+    public String getKubeomaticIoTimebombValid() {
+        return kubeomaticIoTimebombValid;
     }
 
-    @JsonProperty("br.com.clusterlab.timebomb.valid")
-    public void setBrComClusterlabTimebombValid(String brComClusterlabTimebombValid) {
-        this.brComClusterlabTimebombValid = brComClusterlabTimebombValid;
+    @JsonProperty("kubeomatic.io-timebomb-valid")
+    public void setKubeomaticIoTimebombValid(String kubeomaticIoTimebombValid) {
+        this.kubeomaticIoTimebombValid = kubeomaticIoTimebombValid;
+    }
+
+    @JsonProperty("kubeomatic.io-timebomb-valid-human")
+    public String getKubeomaticIoTimebombValidHuman() {
+        return kubeomaticIoTimebombValidHuman;
+    }
+
+    @JsonProperty("kubeomatic.io-timebomb-valid-human")
+    public void setKubeomaticIoTimebombValidHuman(String kubeomaticIoTimebombValidHuman) {
+        this.kubeomaticIoTimebombValidHuman = kubeomaticIoTimebombValidHuman;
+    }
+
+    @JsonProperty("kubeomatic.io-timebomb-sku")
+    public String getKubeomaticIoTimebombSku() {
+        return kubeomaticIoTimebombSku;
+    }
+
+    @JsonProperty("kubeomatic.io-timebomb-sku")
+    public void setKubeomaticIoTimebombSku(String kubeomaticIoTimebombSku) {
+        this.kubeomaticIoTimebombSku = kubeomaticIoTimebombSku;
+    }
+
+    @JsonProperty("kubeomatic.io-timebomb-description")
+    public String getKubeomaticIoTimebombDescription() {
+        return kubeomaticIoTimebombDescription;
+    }
+
+    @JsonProperty("kubeomatic.io-timebomb-description")
+    public void setKubeomaticIoTimebombDescription(String kubeomaticIoTimebombDescription) {
+        this.kubeomaticIoTimebombDescription = kubeomaticIoTimebombDescription;
     }
 
     @JsonAnyGetter
