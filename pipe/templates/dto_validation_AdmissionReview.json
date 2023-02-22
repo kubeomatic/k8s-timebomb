@@ -43,7 +43,7 @@
         "creationTimestamp": "2023-02-16T08:34:37Z",
         "labels": {
           "app": "nginx",
-          "kubeomatic.io-timebomb": "enabled"
+          "kubeomatic-io-timebomb": "enabled"
         },
         "managedFields": [
           {
@@ -57,11 +57,11 @@
         ],
         "generation": 1,
         "annotations": {
-          "kubeomatic.io-timebomb-timer": "5h",
-          "kubeomatic.io-timebomb-valid": "1677685022",
-          "kubeomatic.io-timebomb-valid-human": "texto",
-          "kubeomatic.io-timebomb-sku": "/vao/pai/filho",
-          "kubeomatic.io-timebomb-description": "any text"
+          "kubeomatic-io-timebomb-timer": "5h",
+          "kubeomatic-io-timebomb-valid": "1677685022",
+          "kubeomatic-io-timebomb-valid-human": "texto",
+          "kubeomatic-io-timebomb-sku": "/vao/pai/filho",
+          "kubeomatic-io-timebomb-description": "any text"
         }
       },
       "spec": {
@@ -175,14 +175,14 @@
             "creationTimestamp": null,
             "labels": {
               "app": "nginx",
-              "kubeomatic.io-timebomb": "enabled"
+              "kubeomatic-io-timebomb": "enabled"
             },
             "annotations": {
-              "kubeomatic.io-timebomb-timer": "5h",
-              "kubeomatic.io-timebomb-valid": "1675822002",
-              "kubeomatic.io-timebomb-valid-human": "texto",
-              "kubeomatic.io-timebomb-sku": "/vao/pai/filho",
-              "kubeomatic.io-timebomb-description": "any text"
+              "kubeomatic-io-timebomb-timer": "5h",
+              "kubeomatic-io-timebomb-valid": "1675822002",
+              "kubeomatic-io-timebomb-valid-human": "texto",
+              "kubeomatic-io-timebomb-sku": "/vao/pai/filho",
+              "kubeomatic-io-timebomb-description": "any text"
             }
           },
           "spec": {
@@ -231,7 +231,7 @@
         "creationTimestamp": "2023-02-16T08:34:37Z",
         "labels": {
           "app": "nginx",
-          "kubeomatic.io-timebomb": "enabled"
+          "kubeomatic-io-timebomb": "enabled"
         },
         "managedFields": [
           {
@@ -245,7 +245,7 @@
         ],
         "generation": 1,
         "annotations": {
-          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"nginx\",\"kubeomatic.io-timebomb\":\"enabled\"},\"name\":\"nginx-deployment\",\"namespace\":\"nginx\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"annotations\":{\"kubeomatic.io-timebomb-timer\":\"5h\",\"kubeomatic.io-timebomb-valid\":\"1675822002\"},\"labels\":{\"app\":\"nginx\",\"kubeomatic.io-timebomb\":\"enabled\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"nginx\",\"kubeomatic-io-timebomb\":\"enabled\"},\"name\":\"nginx-deployment\",\"namespace\":\"nginx\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"annotations\":{\"kubeomatic-io-timebomb-timer\":\"5h\",\"kubeomatic-io-timebomb-valid\":\"1675822002\"},\"labels\":{\"app\":\"nginx\",\"kubeomatic-io-timebomb\":\"enabled\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
         }
       },
       "spec": {
@@ -359,14 +359,14 @@
             "creationTimestamp": null,
             "labels": {
               "app": "nginx",
-              "kubeomatic.io-timebomb": "enabled"
+              "kubeomatic-io-timebomb": "enabled"
             },
             "annotations": {
-              "kubeomatic.io-timebomb-timer": "5h",
-              "kubeomatic.io-timebomb-valid": "1675822002",
-              "kubeomatic.io-timebomb-valid-human": "texto",
-              "kubeomatic.io-timebomb-sku": "/vao/pai/filho",
-              "kubeomatic.io-timebomb-description": "any text"
+              "kubeomatic-io-timebomb-timer": "5h",
+              "kubeomatic-io-timebomb-valid": "1675822002",
+              "kubeomatic-io-timebomb-valid-human": "texto",
+              "kubeomatic-io-timebomb-sku": "/vao/pai/filho",
+              "kubeomatic-io-timebomb-description": "any text"
             }
           },
           "spec": {

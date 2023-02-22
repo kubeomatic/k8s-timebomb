@@ -258,7 +258,7 @@ webhooks:
     failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
-        kubeomatic.io-timebomb: "enabled"
+        kubeomatic-io-timebomb: "enabled"
     rules:
       - apiGroups: ["*"]
         apiVersions: ["v1"]
@@ -286,7 +286,7 @@ webhooks:
     failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
-        kubeomatic.io-timebomb: "enabled"
+        kubeomatic-io-timebomb: "enabled"
     rules:
       - apiGroups: ["*"]
         apiVersions: ["v1"]
