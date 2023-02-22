@@ -64,8 +64,4 @@ public class AdmissionController {
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
     }
-    @PostMapping("/test")
-    public String test(@RequestBody String data) throws JsonProcessingException, TimerNotValidException {
-        return String.valueOf(AdmissionService.getTimerInMinutes(data)) ;
-    }
 }
