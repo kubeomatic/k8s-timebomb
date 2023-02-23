@@ -110,10 +110,10 @@ public class AdmissionService {
                 return true;
             }
         } catch (NullPointerException e){
-            logger.error("Annotation br.com.clusterlab.timebomb.valid may be empty, " + e.getMessage());
+            logger.error("Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
             return false;
         } catch (NumberFormatException e){
-            logger.error("Annotation br.com.clusterlab.timebomb.valid may be empty, " + e.getMessage());
+            logger.error("Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + "may be empty, " + e.getMessage());
             return false;
         }
 
@@ -131,10 +131,10 @@ public class AdmissionService {
             }
             
         } catch (NullPointerException e) {
-            logger.error("Label br.com.clusterlab.timebomb may be empty, " + e.getMessage());
+            logger.error("Label " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
             return false;
         } catch (NumberFormatException e) {
-            logger.error("Label br.com.clusterlab.timebomb may be empty, " + e.getMessage());
+            logger.error("Label  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
             return false;
         }
 

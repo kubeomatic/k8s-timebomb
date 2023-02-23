@@ -27,4 +27,12 @@ public class Epoch {
         Date date = new Date( epoch * 1000 );
         return date;
     }
+    public static boolean isValid(Long epoch){
+        if ( epoch > dateToEpoch())
+        {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

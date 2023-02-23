@@ -38,44 +38,43 @@ public class KubernetesClient {
         for (V1Pod item : list.getItems()) {
             for (Map.Entry<String,String> label: item.getMetadata().getLabels().entrySet())
             {
-                logger.info(label.getKey() + " " + label.getValue());
                 boolean labelTimebomKey = label.getKey().equals(AppProperties.getProperty(AppProperties.propertyLabelTimebomb));
                 boolean labelTimebomValue = label.getValue().toLowerCase().equals("enabled");
                 String namespacePod = item.getMetadata().getNamespace() + "/" + item.getMetadata().getName();
                 for (Map.Entry<String,String> annotation: item.getMetadata().getAnnotations().entrySet())
                 {
                     boolean annotationValidityKey = annotation.getKey().equals(AppProperties.getProperty(AppProperties.propertyAnnotationValidity));
+                    if ( (labelTimebomKey) && (labelTimebomValue ))
+                    {
+                        if (annotationValidityKey){
+                            Long annotationValidityValue = Long.valueOf(annotation.getValue());
+                            if ( ! Epoch.isValid(annotationValidityValue))
+                            {
+                                logger.info("Deleting pod " + namespacePod);
+                                logger.info("Pod " + namespacePod + " expired at " + Epoch.epochToDate(annotationValidityValue));
+                                V1DeleteOptions v1DeleteOptions = new V1DeleteOptions();
+                                v1DeleteOptions.setApiVersion("v1");
+                                V1Pod v1Pod = new V1Pod();
+                                v1DeleteOptions.setOrphanDependents(false);
+                                try {
+                                    api.deleteNamespacedPod(
+                                            item.getMetadata().getName(),
+                                            item.getMetadata().getNamespace(),
+                                            null,
+                                            "false",
+                                            null,
+                                            null,
+                                            null,
+                                            v1DeleteOptions
+                                    );
 
-                    if (annotationValidityKey){
-                        String annotationValidityValue = annotation.getValue().toLowerCase().toString();
-                        logger.info(namespacePod);
-                        logger.info(annotation.getKey().toString() + " " + annotation.getValue());
-                        logger.info(label.getKey() + " " + label.getValue());
+                                } catch (Exception e) {
+                                    logger.error("Check Service account permission. App may be without privilege to read or delete resources STACK=" + String.valueOf(e));
+                                }
+                            }
+                        }
                     }
                 }
-//                if ( (labelTimebomKey) && (labelTimebomValue ))
-//                {
-//
-//
-//                    V1DeleteOptions v1DeleteOptions = new V1DeleteOptions();
-//                    v1DeleteOptions.setApiVersion("v1");
-//                    V1Pod v1Pod = new V1Pod();
-//                    v1DeleteOptions.setOrphanDependents(false);
-//                    try {
-//                        api.deleteNamespacedPod(
-//                                item.getMetadata().getName(),
-//                                item.getMetadata().getNamespace(),
-//                                null,
-//                                "false",
-//                                null,
-//                                null,
-//                                null,
-//                                v1DeleteOptions
-//                        );
-//                    } catch (Exception e) {
-//                        logger.error("Check Service account permission. App may be without privilege to read or delete resources STACK=" + String.valueOf(e));
-//                    }
-//                }
             }
         }
     }
