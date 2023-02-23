@@ -22,6 +22,10 @@ public class AdmissionService {
     static Logger logger = LoggerFactory.getLogger(AdmissionController.class);
 
     public static AdmissionResponse mutateAdmissionReview(AdmissionReview admissionReview) throws IOException, TimerNotValidException {
+        ObjectMapper om = new ObjectMapper();
+        logger.info("mutation " + om.writeValueAsString( admissionReview));
+        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString());
+        AdmissionService.validateOperation(admissionReview.getRequest().getOperation().toString());
         if (validateLabel(admissionReview)){
             return getMutateAdmissionResponse(admissionReview);
         }
@@ -31,6 +35,10 @@ public class AdmissionService {
     }
 
     public static AdmissionResponse validateAdmissionReview(AdmissionReview admissionReview) throws IOException {
+        ObjectMapper om = new ObjectMapper();
+        logger.info("Validation " + om.writeValueAsString(admissionReview));
+        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString());
+        AdmissionService.validateOperation(admissionReview.getRequest().getOperation().toString());
         if (validateLabel(admissionReview) && validateAnnotation(admissionReview)){
             return getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
         }
@@ -102,13 +110,8 @@ public class AdmissionService {
             }
 
             Long validityLong = parseLong(validityString);
-            if ( validityLong < Epoch.dateToEpoch()){
-                logger.info(validityString + " < " + Epoch.dateToEpoch());
-                return false;
-            } else {
-                logger.info(validityString + " <= " + Epoch.dateToEpoch());
-                return true;
-            }
+
+            return Epoch.isValid(validityLong);
         } catch (NullPointerException e){
             logger.error("Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
             return false;
@@ -182,16 +185,14 @@ public class AdmissionService {
         return defaultTimerInMinutes;
     }
 
-    public static void validateResource(AdmissionReview admissionReview){
-        String resourceName = admissionReview.getRequest().getResource().getResource().toString();
+    public static void validateResource(String resourceName){
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
         boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
         if ( ! validResourcePod && ! validResourceDeployment) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
         }
     }
-    public static void   validateOperation(AdmissionReview admissionReview){
-        String operationName = admissionReview.getRequest().getOperation().toString();
+    public static void   validateOperation(String operationName){
         boolean validaOperation = operationName.equalsIgnoreCase("create");
         if ( ! validaOperation) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");

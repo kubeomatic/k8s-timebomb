@@ -194,7 +194,7 @@ metadata:
   name: awh
   namespace: awh
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: awh
