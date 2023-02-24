@@ -190,18 +190,9 @@ function CERTIFICATE() {
   RUN "openssl genrsa -out $TMPBASEDIR/$SSL_DEVICE_KEY $SSL_LENGTH"
   RUN "openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
   RUN "openssl x509 -req -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS -extfile <(printf "$SSL_ALTNAME")"
-#  RUN "CONCAT_CA $TMPBASEDIR/$SSL_CA_CERT $TMPBASEDIR/$SSL_DEVICE_CERT"
   RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
   RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
   RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
-
-#  RUN "openssl genrsa -out $TMPBASEDIR/$SSL_CA_KEY $SSL_LENGTH"
-#  RUN "openssl req -new -x509 -days $SSL_EXPIRE -key $TMPBASEDIR/$SSL_CA_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_CA_CERT"
-#  RUN "openssl req -newkey rsa:$SSL_LENGTH -nodes -keyout $TMPBASEDIR/$SSL_DEVICE_KEY -subj $SSL_SUBJECT -out $TMPBASEDIR/$SSL_REQUEST_KEY"
-#  RUN "openssl x509 -req -extfile <(printf "$SSL_ALTNAME") -days $SSL_EXPIRE -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT"
-#  RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
-#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
-#  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
 
 }
 # _____ _____ ____ _____
