@@ -50,11 +50,26 @@ public class AdmissionControllerTest {
                 "10m",
                 "enabled");
 
-//        mockMvc.perform(post("/api/validation")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(podAdmissionReviewData)
-//                        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
-//                .andExpect(jsonPath("$.response.status.code").value("200"));
+        mockMvc.perform(post("/api/validation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(podAdmissionReviewData)
+                        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.status.code").value("200"));
+
+    }
+    @DisplayName("Test MUTATE CREATE VALID POD")
+    @Test
+    public void testMutatePodCreationValid() throws Exception {
+        String podAdmissionReviewData = ValidationServiceTest.podAdmissionBuilder(
+                "awh",
+                "pod-test",
+                "pods",
+                "CREATE",
+                List.of("Test-01","Test-02"),
+                600l,
+                "10m",
+                "enabled");
+
         mockMvc.perform(post("/api/mutation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(podAdmissionReviewData)
@@ -252,6 +267,27 @@ public void testValidateDeploymentCreationValid() throws Exception {
                         .content(podAdmissionReviewData)
                         .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.status.code").value("403"));
+        mockMvc.perform(post("/api/mutation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(podAdmissionReviewData)
+                        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.status.code").value("403"));
+
+
+    }
+    @DisplayName("Test MUTATE CREATE DEPLOYMENT DISABLED")
+    @Test
+    public void testMutateDeploymentCreateDisabled() throws Exception {
+        String podAdmissionReviewData = ValidationServiceTest.deploymentAdmissionBuilder(
+                "awh",
+                "pod-test",
+                "deployments",
+                "CREATE",
+                List.of("Test-01","Test-02"),
+                600l,
+                "10m",
+                "disabled");
+
         mockMvc.perform(post("/api/mutation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(podAdmissionReviewData)

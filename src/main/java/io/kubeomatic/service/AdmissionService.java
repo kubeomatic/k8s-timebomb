@@ -1,5 +1,6 @@
 package io.kubeomatic.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.kubeomatic.config.AppProperties;
 import io.kubeomatic.controller.AdmissionController;
 import io.kubeomatic.dto.patch.JsonPatch;
@@ -21,8 +22,10 @@ import static java.lang.Long.parseLong;
 public class AdmissionService {
     static Logger logger = LoggerFactory.getLogger(AdmissionController.class);
 
+    static ObjectMapper om = new ObjectMapper();
+
     public static AdmissionResponse mutateAdmissionReview(AdmissionReview admissionReview) throws IOException, TimerNotValidException {
-        ObjectMapper om = new ObjectMapper();
+
         logger.info("mutation " + om.writeValueAsString( admissionReview));
         AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString());
         AdmissionService.validateOperation(admissionReview.getRequest().getOperation().toString());
@@ -30,12 +33,11 @@ public class AdmissionService {
             return getMutateAdmissionResponse(admissionReview);
         }
         else {
-            return getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
+            return getValidatedAdmissionResponse(admissionReview, "Resource NOT Authorized, TimeBom Label is Disabled", false, 403);
         }
     }
 
     public static AdmissionResponse validateAdmissionReview(AdmissionReview admissionReview) throws IOException {
-        ObjectMapper om = new ObjectMapper();
         logger.info("Validation " + om.writeValueAsString(admissionReview));
         AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString());
         AdmissionService.validateOperation(admissionReview.getRequest().getOperation().toString());
@@ -49,31 +51,42 @@ public class AdmissionService {
     private static AdmissionResponse getMutateAdmissionResponse(AdmissionReview admissionReview) throws IOException, TimerNotValidException {
         AdmissionResponse admissionResponse = getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
         Response response = admissionResponse.getResponse();
-        String timer = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
+        String timer = null;
+        String resourceName = admissionReview.getRequest().getResource().getResource().toString();
+        boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
+        boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
+
+        if (validResourcePod == true && validResourceDeployment == false) {
+            timer = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
+        }
+        if (validResourceDeployment == true && validResourcePod == false) {
+            timer = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
+        }
         Integer timerInMinutes = getTimerInMinutes(timer);
         Long validity = Epoch.dateToEpoch() + timerInMinutes * 60;
         List<JsonPatch> jsonPatchList = new ArrayList<>();
-        JsonPatch jsonPatchValid = new JsonPatch();
-        jsonPatchValid.setOp("add");
-        jsonPatchValid.setPath("/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid");
-        jsonPatchValid.setValue(Long.toString(validity));
-        jsonPatchList.add(jsonPatchValid);
-        JsonPatch jsonPatchValidHuman = new JsonPatch();
-        jsonPatchValidHuman.setOp("add");
-        jsonPatchValidHuman.setPath("/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid-human");
-        jsonPatchValidHuman.setValue(String.valueOf(Epoch.epochToDate(validity)));
-        jsonPatchList.add(jsonPatchValidHuman);
-        ObjectMapper om = new ObjectMapper();
-        String stringJsonPath = om.writeValueAsString(jsonPatchList);
-        response.setPatch(Base64.getEncoder().encodeToString(stringJsonPath.getBytes()));
+        jsonPatchList.add(mutatePatchAnnotation("add","/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid",Long.toString(validity)));
+        jsonPatchList.add(mutatePatchAnnotation("add","/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid-human",String.valueOf(Epoch.epochToDate(validity))));
+        response.setPatch(jsonPatchListToStringBase64(jsonPatchList));
         response.setPatchType(AppProperties.getProperty(AppProperties.propertyResponsePatchType));
         admissionResponse.setResponse(response);
         logger.info(om.writeValueAsString(admissionResponse));
         return admissionResponse;
     }
+    private static JsonPatch mutatePatchAnnotation(String operation, String path, String value){
+        JsonPatch jsonPatchValid = new JsonPatch();
+        jsonPatchValid.setOp(operation);
+        jsonPatchValid.setPath(path);
+        jsonPatchValid.setValue(value);
+        return jsonPatchValid;
+    }
+    private static String jsonPatchListToStringBase64(List<JsonPatch> jsonPatchList) throws JsonProcessingException {
+        String stringJsonPath = om.writeValueAsString(jsonPatchList);
+        return Base64.getEncoder().encodeToString(stringJsonPath.getBytes());
+    }
 
     private static AdmissionResponse getValidatedAdmissionResponse(AdmissionReview admissionReview, String message, Boolean allowed, Integer responseCode) throws IOException {
-        ObjectMapper om = new ObjectMapper();
+
         Status status = new Status();
         Response response = new Response();
         AdmissionResponse admissionResponse = new AdmissionResponse();
@@ -102,7 +115,6 @@ public class AdmissionService {
             boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
 
             if (validResourcePod == true && validResourceDeployment == false) {
-
                 validityString = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getKubeomaticIoTimebombValid();
             }
             if (validResourceDeployment == true && validResourcePod == false) {
@@ -119,7 +131,6 @@ public class AdmissionService {
             logger.error("Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + "may be empty, " + e.getMessage());
             return false;
         }
-
     }
     static boolean validateLabel(AdmissionReview admissionReview) {
         String resourceName = admissionReview.getRequest().getResource().getResource().toString();
@@ -128,8 +139,12 @@ public class AdmissionService {
         try {
 
             if (validResourcePod == true && validResourceDeployment == false) {
+                logger.info("POD " + admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb());
+                logger.info(String.valueOf(admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
                 return admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled");
             } else {
+                logger.info(" Deployment " + admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb());
+                logger.info(String.valueOf(admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
                 return admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled");
             }
             
