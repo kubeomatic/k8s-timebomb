@@ -1,5 +1,6 @@
 package io.kubeomatic.service;
 
+import io.kubeomatic.config.AppProperties;
 import io.kubernetes.client.openapi.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class ScheduledTasks {
     @Scheduled(fixedRate = 6000 )
     public void reportCurrentTime() throws IOException, ApiException {
         KubernetesClient.getPodsInCluster();
+        log.info("Old " + AppProperties.getProperty(AppProperties.propertieReviewApiversion));
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
 }

@@ -1,5 +1,7 @@
 package io.kubeomatic.config;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.io.IOException;
 import java.io.InputStream;
 

@@ -58,9 +58,9 @@
         "generation": 1,
         "annotations": {
           "kubeomatic-io-timebomb-timer": "5h",
-          "kubeomatic-io-timebomb-valid": "1677685022",
-          "kubeomatic-io-timebomb-valid-human": "texto",
-          "kubeomatic-io-timebomb-sku": "/vao/pai/filho",
+          "kubeomatic-io-timebomb-valid": "1677608845",
+          "kubeomatic-io-timebomb-valid-human": "Tue Feb 28 18:27:25 GMT 2023",
+          "kubeomatic-io-timebomb-sku": "/grandfather/father/son",
           "kubeomatic-io-timebomb-description": "any text"
         }
       },
