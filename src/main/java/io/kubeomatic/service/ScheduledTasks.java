@@ -21,7 +21,6 @@ public class ScheduledTasks {
     @Scheduled(fixedRate = 6000 )
     public void reportCurrentTime() throws IOException, ApiException {
         KubernetesClient.getPodsInCluster();
-        log.info("Old " + AppProperties.getProperty(AppProperties.propertieReviewApiversion));
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
 }

@@ -73,8 +73,7 @@ public class AdmissionControllerTest {
         mockMvc.perform(post("/api/mutation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(podAdmissionReviewData)
-                        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.status.code").value("200"));
+                        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());
     }
     @DisplayName("Test VALIDATE CREATE INVALID POD")
     @Test

@@ -25,7 +25,7 @@ spec:
         app: nginx
         kubeomatic-io-timebomb: "enabled"
       annotations:
-        kubeomatic-io-timebomb-timer: "3m"
+        kubeomatic-io-timebomb-timer: "1m"
         kubeomatic-io-timebomb-sku: "/avo/pai/filho"
     spec:
       containers:

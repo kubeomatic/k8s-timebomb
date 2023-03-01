@@ -27,7 +27,7 @@ public class AdmissionService {
     public static AdmissionResponse mutateAdmissionReview(AdmissionReview admissionReview) throws IOException, TimerNotValidException {
 
         logger.info("mutation " + om.writeValueAsString( admissionReview));
-        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString());
+        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString(),true);
         AdmissionService.validateOperation(admissionReview.getRequest().getOperation().toString());
         if (validateLabel(admissionReview)){
             return getMutateAdmissionResponse(admissionReview);
@@ -140,11 +140,11 @@ public class AdmissionService {
 
             if (validResourcePod == true && validResourceDeployment == false) {
                 logger.info("POD " + admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb());
-                logger.info(String.valueOf(admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
+                logger.info("LABEL " + String.valueOf(admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
                 return admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled");
             } else {
-                logger.info(" Deployment " + admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb());
-                logger.info(String.valueOf(admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
+                logger.info("Deployment " + admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb());
+                logger.info("LABEL " + String.valueOf(admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
                 return admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled");
             }
             
@@ -206,6 +206,20 @@ public class AdmissionService {
         if ( ! validResourcePod && ! validResourceDeployment) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
         }
+    }
+    public static void validateResource(String resourceName, boolean failForPods){
+        boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
+        boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
+        if ( validResourcePod && failForPods)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Do not perform mutation on PODs");
+        }
+        else{
+            if ( ! validResourcePod && ! validResourceDeployment) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+            }
+        }
+
     }
     public static void   validateOperation(String operationName){
         boolean validaOperation = operationName.equalsIgnoreCase("create");
