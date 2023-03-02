@@ -143,12 +143,12 @@ function RUN() {
   while true
   do
     date
-    echo $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
-    time eval $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
+    echo $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
+    time eval $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
     if [ $? -ne 0 ]
     then
       echo FAIL $?
-      echo FAIL $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
+      echo FAIL $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
       case $2 in
         ignore)
           export RC=0
@@ -168,7 +168,7 @@ function RUN() {
           ;;
       esac
     else
-      echo SUCCESS $1 | eval "$(CENSOR_BUILD $SSL_PASS)"
+      echo SUCCESS $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
       export RC=0
     fi
     if [ $RC -eq 0 ]
@@ -212,14 +212,18 @@ done
 #   \_/_/   \_\_| \_\____/
 #
 export TAG_COUNT=$(cat pipe/build.tag.count)
-export TAG_COUNT=200
+export TAG_COUNT=admission-200
 expr $TAG_COUNT + 1 > pipe/build.tag.count
-export BUILD_TAG=1.$TAG_COUNT
-export BUILD_REGISTRY=localhost:5000
-export BUILD_DST_IMAGE=timebomb-admission
+export BUILD_TAG=$TAG_COUNT
+export BUILD_TAG_ADMISSION=admission-200
+export BUILD_TAG_SCHEDULE=schedule-200
+export BUILD_REGISTRY=registry.hub.docker.com:443
+export BUILD_DST_IMAGE=kubeomatic/timebomb
 export BUILD_DST_IMAGE_ADMISSION=timebomb-admission
 export BUILD_DST_IMAGE_SCHEDULE=timebomb-schedule
 export BUILD_SRC_IMAGE=mcr.microsoft.com/openjdk/jdk:17-ubuntu
+export CR_USER=$(cat etc/cr_user)
+export CR_PASS=$(cat etc/cr_pass)
 export KUBECONFIG=$HOME/.kube/configs/kind
 #export SSL_PASS="$(GENPASS | grep ^GOOD | awk '{print $2}' )"
 export SSL_CA_KEY=rootCA.key
@@ -245,8 +249,8 @@ export BASEDIR=extra
 #
 cat pipe/template-awh-deploy.yml | \
   sed \
-    -e 's|TEMPLATE_DEPLOY_IMAGE_ADMISSION|'$BUILD_REGISTRY/$BUILD_DST_IMAGE_ADMISSION:$BUILD_TAG'|g' \
-    -e 's|TEMPLATE_DEPLOY_IMAGE_SCHEDULE|'$BUILD_REGISTRY/$BUILD_DST_IMAGE_SCHEDULE:$BUILD_TAG'|g' \
+    -e 's|TEMPLATE_DEPLOY_IMAGE_ADMISSION|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG_ADMISSION'|g' \
+    -e 's|TEMPLATE_DEPLOY_IMAGE_SCHEDULE|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG_SCHEDULE'|g' \
     -e 's|TEMPLATE_VALIDATINGWH_CAROOT|'$(cat $TMPBASEDIR/$SSL_CA_CERT | base64 -w 0)'|g' > awh-deploy.yml
 cd $WORKDIR
 

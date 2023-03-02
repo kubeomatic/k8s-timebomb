@@ -84,23 +84,24 @@
 						<image>${env.BUILD_REGISTRY}/${env.BUILD_DST_IMAGE}</image>
 						<tags>
 							<tag>${env.BUILD_TAG}</tag>
+							<tag>${env.BUILD_TAG}-latest</tag>
 						</tags>
-						<!--                        <auth>-->
-						<!--                            <username>${env.REGISTRY_USERNAME}</username>-->
-						<!--                            <password>${env.REGISTRY_PASSWORD}</password>-->
-						<!--                        </auth>-->
+						<auth>
+							<username>${env.CR_USER}</username>
+							<password>${env.CR_PASS}</password>
+						</auth>
 					</to>
 					<container>
 						<user>app</user>
 					</container>
-					<extraDirectories>
-						<paths>
-							<path>
-								<from>extra</from>
-								<into>/extra</into>
-							</path>
-						</paths>
-					</extraDirectories>
+<!--					<extraDirectories>-->
+<!--						<paths>-->
+<!--							<path>-->
+<!--								<from>extra</from>-->
+<!--								<into>/extra</into>-->
+<!--							</path>-->
+<!--						</paths>-->
+<!--					</extraDirectories>-->
 				</configuration>
 				<executions>
 					<execution>

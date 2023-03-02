@@ -21,6 +21,15 @@ metadata:
   name: timebomb
   namespace: timebomb
 ---
+apiVersion: v1
+data:
+  ks.p12: MIIL/gIBAzCCC6gGCSqGSIb3DQEHAaCCC5kEgguVMIILkTCCBagGCSqGSIb3DQEHAaCCBZkEggWVMIIFkTCCBY0GCyqGSIb3DQEMCgECoIIFQDCCBTwwZgYJKoZIhvcNAQUNMFkwOAYJKoZIhvcNAQUMMCsEFHTea6QOJ6K+hhUjUSUcvCvmw2huAgInEAIBIDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQ+9F7cWAhVqhNp+0Kix9KKASCBNDsxFVxoFNWmNpoJk1ZCju82asGTwWHX27jwsMLQcbAQ1PKbAxBCkqts9qouG8WyzvoT8BM39vlpF76353dtqtJDBgSmUo9ccAeZi6b4wc5zVDTSWjVCaXwdywq0BDc1sUL3lNhifkCMwZeepXTpN0EJjqrWWJZSnGxHpJ1NAGVWn+8ak/yVb/dUxDxuEJ99putny5UNcR2hazHwZhCSbstQPeCVVaTL30mnZrZDQYj/p8mWSMR6WzcqrG+bnn9POgwj88hg0xerwCTqu+5CfDhQ9BSz3QFTwuugPZ9PL3pmkYEJTUATKULd58MEUsRqMNMMmAY4UMkXtMAyRymkowiJPJiyL1j9GLembAAXhr5cmFt4E8hmvE1OVUs3CBObB4HYvxVFyPYYfnu1QO8NVdHt+7+r2HfDy2OyyT/5/kTZ7TJuj37+jxmrPvR1UTuHP9ytP9r5BadL3QrtPra5o+gGLCywHW67hs9VDAY1nIpkd3lSVmakWUB721b4p55CCo7YSEg+cSuVKsYFIiIEr1NaO6zGYfbv0cujquufzDonqatmRHVwNbbZqkTPkSiPCDRABEH+64FsO9hjssSCtBAkOxNo+gJ4vbD2P1XUh+wipP7Vf81P97agJ4op7+50dua6C1L7tYpBn88/07wInI/i8tRjFYrLKhThZMOt22QuqUiy7OHcvrESNJE7C+BT43H1q4lLfxv5IqcHhOYJauv/gGKB96IVWDtruEKbqfQszfi2txkePtRh/uVw6N846R1pWFmIA8/HKYNsm1ozKU+GD5CUMjepScb3UgFWwcpq6g+dGq71A09T9u7bBen7bZLhWA6dUqSmINIiy/BtffxQOGqg1getJV7HR52n0eRYWIzi9NkxVQT6KJ/6poYBKVR/RgCuNNPR/ZHrqFNRhbfzYWIKJkbfselBwWA8aowjsbJB1utb8776VqjMRNt68R0kwiHU27VIoP7DR7E+2pbdy1i5Tqgf1YWagqX3PkwntkdRO4K82fZzuCYO6WB0DypchTIbATL8oUzTeI629/e1LOQH81/CmJxSrdBIT4S9S1ccDiJXpPHJ0JRyv/S99Zd128KvNENzlm0mstaQ1ORtCnhvbkukc/3APVWCodI1MlMyBcmLXJpq+aSHUvwjFcXuRgWzDjOX/g6dZDqmeM7lH7N9j1qq3BmiiVsdfMNfBKmvIjaHUlDgrYVbk5QyblkIf6+SKMLUU4wKzdVLu1j9phUxRdfjdEud/ABIGyEaeJK8oDXYL9wlWSPaoO9fRv3bkA7zrmwKnRGzKenN6YOgW5hrRGmgjAP0+e3orvrXwvujDLoapkNTajfQstHB9YmFtuo4tAjoyuzF7ZhgKfoMQ8i+xXPxquw9+y5v4Acmve2c8w4Fs6f+FJ1boN2Wq0ADzshtP2LD9sJJyJ0SVcCqGWMa+WIGleAVx5kVFikoPcFG7rk/mUvFKtu10Ui9wCIIR4zmVlB1hHB97f0GZa7vAjrbjFARM4n9k2mrS+D6z112HuHVJrIV2i/N5BDYza8lD3ajr16GCcQQXtkDWVcMyrWq/y765HVTaTu7VxqVBmyCjkR7XpHp2dg1uMUCrM52HrViM8oRuRYDDHu6yW/diR+EePIQhdbA1Lc/bEPtzE6MBUGCSqGSIb3DQEJFDEIHgYAYQB3AGgwIQYJKoZIhvcNAQkVMRQEElRpbWUgMTY3NzcyNTA1MzY4NDCCBeEGCSqGSIb3DQEHBqCCBdIwggXOAgEAMIIFxwYJKoZIhvcNAQcBMGYGCSqGSIb3DQEFDTBZMDgGCSqGSIb3DQEFDDArBBSpclRZk6h51zli3r6FkalJ3q8I0QICJxACASAwDAYIKoZIhvcNAgkFADAdBglghkgBZQMEASoEEPVoFKnRFqxBLUch+H5rIlWAggVQDU4RICIT5G6Mqn0TytDJU0jyv8dy4rrGVu9gT3LHFmoZ2ACtg6M26VtBwgiF4RDhK8Q2PhqSLMAKg2x/VeJiSI0W3UTvLLwXNKf2W82gts/qQ6h7QOcmF1axq5qS1//vD3RCQ+/efdAPrNlYSumMCa7vcRYFI/psJoOd3kk8pQqkNsqtxq8UctKFPC9eyZLjEaf5Ru5K0YIOBahMM4MXdP4arKtk0y76Zx6BPtS/FiByriJxilY2iEfl6232akERG2cjFhZKA18CkUJhGCiPsiz3hV6FrtyGHNHuIfTzs/Mfm7sgKoJ9urLdY7Z49DQPW6OdSuEwPW95r1Bj9SAyLcZZlPmYnYioFbQtFalchM8cm3TtO6ZqLsSN91ScQbEBy453ZrMnpaBpK6DyhO91nkBLpUyj5X1XQ8MnS6Dt/vfTBdFrTP2iq0RF5U4Y6vAPtgL7lvyIB0EoNevGEiHdxgPvGUrBIRfGF85vSoSV1i39imbrJ/zT50UJkReHgzUtrWvxgCvKyZVbvyhddIi4390tkJ93kIsq170ne+6s0/LmnzlM4LMGk38egNsHTQbw2DIRM8RIk/fm2+em3lZrGzfLVpTtmFL3fLd5VSSN0aPI+2FKw7Y4Txq6omGW3CYIqSGSt4EnyAjCXYhpOn8VxTA/At1fkg7i0nqhXd0FVRL7BByDO1SrJHDoxxsFP6p5j38EzQ47L+tcb+fOt2EvbY3fiQQU0SWbxlSQFdqXjVs+sb0dcXy3Ez0EAgaE172G4+bcIdbwVDj4lUjB81u4ZKbQ1vsYfpD1iqJtBjWTZ5InPvgFZY2rrADMnCQVyzn2rcUAx4quPk8p9Hi7HIaegEC2ucGDA1FQAbNrqOlj7Eiehhr5U6HdqASF/9otRdpM9lJSV/lW3HCSTmA7wERkwI7EUenV240kY2MapWnwxx+sPpFBMDJd7+dEvIaCcxwz7sIX395NxwxJj7amNaK08UsiL2UuAsfKtpXEHAkH/gByuRFX+fKk1v67gvvNJ/6Oga086jY1xq53gbq06s4wwl0Mw5YkhNoesL3/GE0PldW5dikHwIG4kUXdECOfwnXSBuBcTB9+E0WxjOk9iUJx8WZrqbQoJENsJcBLBEdPN5bgrUxI0D5mSsjzzARlGR9SER5FVyyHTwF/OVGtbqPQqbO0euvglrTcqmPreYWtkk+Aj4cLRRV52xEFgVWGh3zw5rR8xoDANrDSxrhwkM5BKri9ZHvpcUhH0hqKDHJukucJstNbnnLLPVS/BR9cG16mTTe6REV99joN4/lRdUY4e1+nuCNbqveXDuaU92Q1DjocSJiftMMSoN//gvZt2j/TsSDfFPh02UzF3sl3kiEB40ttAbKpuvLMwfUlxrd7FtEVja/E4z8STSOX334n5WTta3X5SaolxAtrzDj1tdDSl/UxzaSIli+jEwyEHvNjWI9iIawJCW70ST5oyKuehNw/Xo4QFehTpFm0+q5ZMgissj7pUdmE9+wApwEfioSua6dsTLgWxxTerSpuJap5jYTuXOUYLPE8FX8WDVQn40wkH90xnCYNSeDssp5i5BwYRKqVBgh36aVOaxlzhMGrs0o+sSVVFsLMQtz5hwIncOeywH/tMr9w2S0vUc54f+2ccpTz9t+JGfBdPPYA7q0/c8UqOAdiYQjftqo/1gQX9bILopVaocQn/Y14ZwTIOiZED2JNJx9RG1T5MSoazLDAUkFQDbCUPgQYMBM7FUKbL1Uo835nZq59q7Y3uzbMje/F+xcyShI0dypdGM+z61K6VEu4iyAWAYLqeemUw9QDc7RrJDBNMDEwDQYJYIZIAWUDBAIBBQAEIGK6VXY/I4HJjnkicrMsx1466KswLGm61MRgLXUugjlxBBSb5Q7i+l4yvlMgAAlnSeNWuddT4wICJxA=
+kind: Secret
+metadata:
+  name: keystore
+  namespace: timebomb
+type: Opaque
+---
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -263,6 +272,9 @@ spec:
           volumeMounts:
             - name: app-properties
               mountPath: /app/resources
+            - name: keystore
+              mountPath: "/extra"
+              readOnly: true
           ports:
             - containerPort: 8443
               name: admission-svc
@@ -284,6 +296,10 @@ spec:
         - name: app-properties
           configMap:
             name: timebomb-admission
+        - name: keystore
+          secret:
+            secretName: keystore
+            optional: false
 ---
 apiVersion: apps/v1
 kind: Deployment

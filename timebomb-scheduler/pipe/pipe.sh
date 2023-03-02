@@ -212,13 +212,15 @@ done
 #   \_/_/   \_\_| \_\____/
 #
 export TAG_COUNT=$(cat pipe/build.tag.count)
-export TAG_COUNT=200
+export TAG_COUNT=schedule-200
 expr $TAG_COUNT + 1 > pipe/build.tag.count
-export BUILD_TAG=1.$TAG_COUNT
-export BUILD_REGISTRY=localhost:5000
-export BUILD_DST_IMAGE=timebomb-schedule
+export BUILD_TAG=$TAG_COUNT
+export BUILD_REGISTRY=registry.hub.docker.com:443
+export BUILD_DST_IMAGE=kubeomatic/timebomb
 export BUILD_SRC_IMAGE=mcr.microsoft.com/openjdk/jdk:17-ubuntu
 export KUBECONFIG=$HOME/.kube/configs/kind
+export CR_USER=$(cat etc/cr_user)
+export CR_PASS=$(cat etc/cr_pass)
 #export SSL_PASS="$(GENPASS | grep ^GOOD | awk '{print $2}' )"
 export SSL_CA_KEY=rootCA.key
 export SSL_CA_CERT=rootCA.crt
