@@ -143,12 +143,12 @@ function RUN() {
   while true
   do
     date
-    echo $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
-    time eval $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
+    echo $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
+    time eval $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
     if [ $? -ne 0 ]
     then
       echo FAIL $?
-      echo FAIL $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
+      echo FAIL $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
       case $2 in
         ignore)
           export RC=0
@@ -168,7 +168,7 @@ function RUN() {
           ;;
       esac
     else
-      echo SUCCESS $1 | eval "$(CENSOR_BUILD $SSL_PASS $CR_USER $CR_PASS)"
+      echo SUCCESS $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
       export RC=0
     fi
     if [ $RC -eq 0 ]
@@ -284,7 +284,7 @@ RUN "kubectl get nodes"
 RUN "kubectl -n timebomb get all"
 RUN "kubectl apply -f awh-deploy.yml"
 RUN "kubectl -n timebomb get all"
-RUN "sleep 5; kubectl -n timebomb port-forward service/awh-service 8443:443" retry  &
+RUN "sleep 5; kubectl -n timebomb port-forward service/timebomb-admission-service 8443:443" retry  &
 export PIDPF=$!
 #stern -n awh awh
 read
