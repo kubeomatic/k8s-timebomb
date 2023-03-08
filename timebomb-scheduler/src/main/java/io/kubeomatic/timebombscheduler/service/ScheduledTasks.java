@@ -17,7 +17,7 @@ public class ScheduledTasks {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 
-    @Scheduled(fixedRate = 6000 )
+    @Scheduled(cron = "${cron.expression}")
     public void reportCurrentTime() throws IOException, ApiException {
         KubernetesClient.deleteExpiredPodsInCluster();
         log.info("The time is now {}", dateFormat.format(new Date()));
