@@ -51,6 +51,7 @@ data:
     kubeomatic-io.timebomb.annotation.valid=kubeomatic-io-timebomb-valid
     kubeomatic-io.timebomb.annotation.sku=kubeomatic-io-timebomb-sku
     kubeomatic-io.timebomb.annotation.description=kubeomatic-io-timebomb-description
+    cron.expression = */15 * * * * *
 ---
 kind: ConfigMap
 apiVersion: v1

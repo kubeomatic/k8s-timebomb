@@ -212,7 +212,7 @@ done
 #   \_/_/   \_\_| \_\____/
 #
 export TAG_COUNT=$(cat pipe/build.tag.count)
-export TAG_COUNT=schedule-200
+export TAG_COUNT=schedule-206
 expr $TAG_COUNT + 1 > pipe/build.tag.count
 export BUILD_TAG=$TAG_COUNT
 export BUILD_REGISTRY=registry.hub.docker.com:443

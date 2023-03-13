@@ -87,8 +87,8 @@
                     <to>
                         <image>${env.BUILD_REGISTRY}/${env.BUILD_DST_IMAGE}</image>
                         <tags>
-                            <tag>${env.BUILD_TAG}</tag>
-                            <tag>${env.BUILD_TAG}-latest</tag>
+                            <tag>schedule-${env.BUILD_TAG}</tag>
+                            <tag>schedule-latest</tag>
                         </tags>
                         <auth>
                             <username>${env.CR_USER}</username>
