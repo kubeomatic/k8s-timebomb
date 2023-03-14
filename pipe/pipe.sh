@@ -139,7 +139,7 @@ function TEMPFILE() {
 	esac
 }
 function RUN() {
-  export CENSORSTRING=$CR_USER\;$CR_PASS
+
   export RC=3
   while true
   do
@@ -214,13 +214,13 @@ done
 #
 export TAG_COUNT=$(cat pipe/build.tag.count)
 expr $TAG_COUNT + 1 > pipe/build.tag.count
-export BUILD_TAG=$TAG_COUNT
+export BUILD_TAG=0.$TAG_COUNT
 export BUILD_REGISTRY=registry.hub.docker.com:443
 export BUILD_DST_IMAGE=kubeomatic/timebomb
 export BUILD_SRC_IMAGE=mcr.microsoft.com/openjdk/jdk:17-ubuntu
 export CR_USER=$(cat etc/cr_user)
 export CR_PASS=$(cat etc/cr_pass)
-
+export CENSORSTRING=$CR_USER\;$CR_PASS
 
 
 # ____  ____  _____ ____   _    ____  _____
@@ -245,11 +245,11 @@ do
   cd $CURRENTPATH/$MODULE
   export WORKDIR=$(pwd)
   RUN "file pom.xml"
-  RUN "unlink $CURRENTPATH/$MODULE/etc"
+  RUN "unlink $CURRENTPATH/$MODULE/etc" ignore
   RUN "ln -s $CURRENTPATH/etc $CURRENTPATH/$MODULE/etc " ignore
   mvn test; if [ $? -ne 0 ]; then echo TEST FAIL; exit 1;fi
   RUN "mvn compile jib:build package -Dmaven.test.skip=true"
 done
-
+echo $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG
 
 

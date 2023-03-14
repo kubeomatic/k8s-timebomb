@@ -20,6 +20,6 @@ public class ScheduledTasks {
     @Scheduled(cron = "${cron.expression}")
     public void reportCurrentTime() throws IOException, ApiException {
         KubernetesClient.deleteExpiredPodsInCluster();
-        log.info("The time is now {}", dateFormat.format(new Date()));
+        log.info("Nothing more to do. Waiting next run to identify expired PODs to delete. Server time is: EPOCH=" + Epoch.dateToEpoch().toString() + ", Human=\"" + Epoch.epochToDate(Epoch.dateToEpoch()) + "\"");
     }
 }

@@ -28,8 +28,10 @@ public class KubernetesClient {
                 logger.info("Checking validity of " + namespacePod);
                 boolean matchValidityAnnotation = false;
                 boolean matchLabelEnabled = false;
+                Integer labelCount = 0;
                 for (Map.Entry<String,String> label: item.getMetadata().getLabels().entrySet())
                 {
+                    labelCount++;
                     Integer numberOfLabels = item.getMetadata().getLabels().size();
                     if ( matchLabelEnabled )
                     {
@@ -59,7 +61,7 @@ public class KubernetesClient {
                                     if ( ! Epoch.isValid(annotationValidityValue))
                                     {
                                         logger.info("Deleting pod " + namespacePod);
-                                        logger.info("Pod " + namespacePod + " expired at " + Epoch.epochToDate(annotationValidityValue));
+                                        logger.info("Pod " + namespacePod + " expired at " + Epoch.epochToDate(annotationValidityValue) + ". " + annotationValidityValue.toString() + " smaller than " + Epoch.dateToEpoch().toString());
                                         V1DeleteOptions v1DeleteOptions = new V1DeleteOptions();
                                         v1DeleteOptions.setApiVersion("v1");
                                         V1Pod v1Pod = new V1Pod();
@@ -85,14 +87,14 @@ public class KubernetesClient {
                                 }
                             }
                         }
-                        if ( ! matchValidityAnnotation) {
+                        if ( ! matchValidityAnnotation && ( annotationCount == numberOfAnnoations)) {
                             logger.info("Pod " + namespacePod + " does not have timebomb validity annotation. Skipping...");
                             logger.info("size=" + numberOfAnnoations.toString() + " count=" + annotationCount.toString());
                         }
                     }
                     else
                     {
-                        if ( () )
+                        if (( labelCount == numberOfLabels ) && ! matchLabelEnabled )
                         {
                             logger.info("Pod " + namespacePod + " does not have timebomb label enabled. Skipping...");
                         }
