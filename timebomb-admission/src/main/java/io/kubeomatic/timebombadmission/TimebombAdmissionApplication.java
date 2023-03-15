@@ -18,5 +18,4 @@ public class TimebombAdmissionApplication {
         application.setAdditionalProfiles("ssl");
         application.run(args);
     }
-
 }
