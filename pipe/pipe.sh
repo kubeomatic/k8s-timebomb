@@ -139,16 +139,17 @@ function TEMPFILE() {
 	esac
 }
 function RUN() {
+
   export RC=3
   while true
   do
     date
-    echo $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
-    time eval $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
+    echo $1 | eval "$(CENSOR_BUILD $CENSORSTRING)"
+    time eval $1 | eval "$(CENSOR_BUILD $CENSORSTRING)"
     if [ $? -ne 0 ]
     then
       echo FAIL $?
-      echo FAIL $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
+      echo FAIL $1 | eval "$(CENSOR_BUILD $CENSORSTRING)"
       case $2 in
         ignore)
           export RC=0
@@ -168,7 +169,7 @@ function RUN() {
           ;;
       esac
     else
-      echo SUCCESS $1 | eval "$(CENSOR_BUILD $SSL_PASS\;$CR_USER\;$CR_PASS)"
+      echo SUCCESS $1 | eval "$(CENSOR_BUILD $CENSORSTRING)"
       export RC=0
     fi
     if [ $RC -eq 0 ]
@@ -212,34 +213,15 @@ done
 #   \_/_/   \_\_| \_\____/
 #
 export TAG_COUNT=$(cat pipe/build.tag.count)
-export TAG_COUNT=206
 expr $TAG_COUNT + 1 > pipe/build.tag.count
-export BUILD_TAG=admission-$TAG_COUNT
-export BUILD_TAG_ADMISSION=admission-$TAG_COUNT
-export BUILD_TAG_SCHEDULE=schedule-$TAG_COUNT
+export BUILD_TAG=0.$TAG_COUNT
 export BUILD_REGISTRY=registry.hub.docker.com:443
 export BUILD_DST_IMAGE=kubeomatic/timebomb
-export BUILD_DST_IMAGE_ADMISSION=admission-$TAG_COUNT
-export BUILD_DST_IMAGE_SCHEDULE=schedule-$TAG_COUNT
 export BUILD_SRC_IMAGE=mcr.microsoft.com/openjdk/jdk:17-ubuntu
 export CR_USER=$(cat etc/cr_user)
 export CR_PASS=$(cat etc/cr_pass)
-export KUBECONFIG=$HOME/.kube/configs/kind
-#export SSL_PASS="$(GENPASS | grep ^GOOD | awk '{print $2}' )"
-export SSL_CA_KEY=rootCA.key
-export SSL_CA_CERT=rootCA.crt
-export SSL_DEVICE_KEY=device.key
-export SSL_REQUEST_KEY=device.csr
-export SSL_DEVICE_CERT=device.crt
-export SSL_KS_P12=ks.p12
-export SSL_KS_JKS=ks.jks
-export SSL_PASS=abcabc
-export SSL_LENGTH=2048
-export SSL_EXPIRE=3650
-export SSL_SUBJECT="'/C=BR/ST=Sao_Paulo/L=Sao_Paulo/O=clusterlab.com.br/OU=Clusterlab/CN=timebomb-admission-service.timebomb.svc.cluster.local/emailAddress=devops@clusterlab.com.br'"
-export SSL_ALTNAME="subjectAltName=DNS:timebomb-admission-service.timebomb.svc.cluster.local,DNS:timebomb-admission-service.timebomb.svc"
-export TMPBASEDIR=tmp
-export BASEDIR=extra
+export CENSORSTRING=$CR_USER\;$CR_PASS
+
 
 # ____  ____  _____ ____   _    ____  _____
 #|  _ \|  _ \| ____|  _ \ / \  |  _ \| ____|
@@ -247,49 +229,27 @@ export BASEDIR=extra
 #|  __/|  _ <| |___|  __/ ___ \|  _ <| |___
 #|_|   |_| \_\_____|_| /_/   \_\_| \_\_____|
 #
-cat pipe/template-awh-deploy.yml | \
-  sed \
-    -e 's|TEMPLATE_DEPLOY_IMAGE_ADMISSION|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_DST_IMAGE_ADMISSION'|g' \
-    -e 's|TEMPLATE_DEPLOY_IMAGE_SCHEDULE|'$BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_DST_IMAGE_SCHEDULE'|g' \
-    -e 's|TEMPLATE_VALIDATINGWH_CAROOT|'$(cat $TMPBASEDIR/$SSL_CA_CERT | base64 -w 0)'|g' > awh-deploy.yml
-cd $WORKDIR
 
-if ! [ -f $BASEDIR/$SSL_KS_P12 ]
-then
-  RUN "rm -f $TMPBASEDIR/*" ignore
-  RUN "rm -f $BASEDIR/*" ignore
-fi
-RUN "mkdir -p $BASEDIR" ignore
-RUN "mkdir -p $TMPBASEDIR" ignore
-#RUN "kind delete cluster ; kind create cluster ; kind get kubeconfig > $HOME/.kube/configs/kind"
-RUN "killall kubectl" ignore
+
+
 # ____  _   _ _   _ ____
 #|  _ \| | | | \ | / ___|
 #| |_) | | | |  \| \___ \
 #|  _ <| |_| | |\  |___) |
 #|_| \_\\___/|_| \_|____/
 #
-if ! [ -f $BASEDIR/$SSL_KS_P12 ]
-then
-  CERTIFICATE
-fi
-RUN "kubectl delete -f awh-deploy.yml"
-mvn test; if [ $? -ne 0 ]; then echo TEST FAIL; exit 1;fi
-RUN "mvn compile jib:build -Dmaven.wagon.http.ssl.insecure=true -Dmaven.test.skip=true package"
-RUN "docker pull $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
-RUN "docker image ls | grep -w $BUILD_DST_IMAGE:$BUILD_TAG"
-RUN "kind load docker-image $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG"
-RUN "docker image ls | grep -w $BUILD_DST_IMAGE:$BUILD_TAG"
-RUN "kubectl get nodes"
-RUN "kubectl -n timebomb get all"
-RUN "kubectl apply -f awh-deploy.yml"
-RUN "kubectl -n timebomb get all"
-RUN "sleep 5; kubectl -n timebomb port-forward service/timebomb-admission-service 8443:443" retry  &
-export PIDPF=$!
-#stern -n awh awh
-read
-RUN "killall kubectl"
-RUN "pkill -P $PIDPF"
 
+export CURRENTPATH=$(pwd)
+for MODULE in timebomb-admission timebomb-scheduler
+do
+  cd $CURRENTPATH/$MODULE
+  export WORKDIR=$(pwd)
+  RUN "file pom.xml"
+  RUN "unlink $CURRENTPATH/$MODULE/etc" ignore
+  RUN "ln -s $CURRENTPATH/etc $CURRENTPATH/$MODULE/etc " ignore
+  mvn test; if [ $? -ne 0 ]; then echo TEST FAIL; exit 1;fi
+  RUN "mvn compile jib:build package -Dmaven.test.skip=true"
+done
+echo $BUILD_REGISTRY/$BUILD_DST_IMAGE:$BUILD_TAG
 
 

@@ -24,42 +24,64 @@ public class AdmissionService {
 
     static ObjectMapper om = new ObjectMapper();
 
-    public static AdmissionResponse mutateAdmissionReview(AdmissionReview admissionReview) throws IOException, TimerNotValidException {
+    private static String getAdmissionUUID(AdmissionReview admissionReview){
+        return admissionReview.getRequest().getUid();
+    }
+    private static String getAdmissionResource(AdmissionReview admissionReview){
+        return admissionReview.getRequest().getResource().getResource();
+    }
+    private static String getAdmissionNameSpace(AdmissionReview admissionReview){
+        return admissionReview.getRequest().getNamespace();
+    }
+    private static String getAdmissionName(AdmissionReview admissionReview){
+        return admissionReview.getRequest().getName();
+    }
 
-        logger.info("mutation " + om.writeValueAsString( admissionReview));
-        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString(),true);
-        AdmissionService.validateOperation(admissionReview.getRequest().getOperation().toString());
+    public static AdmissionResponse mutateAdmissionReview(AdmissionReview admissionReview) throws IOException, TimerNotValidException {
+        logger.info("Mutation AdmissionReview: UUID=\"" +
+                getAdmissionUUID(admissionReview)+ "\", " +
+                getAdmissionResource(admissionReview) + " " +
+                getAdmissionNameSpace(admissionReview) + "/" +
+                getAdmissionName(admissionReview));
+        logger.debug("Mutation AdmissionReview: " + om.writeValueAsString( admissionReview));
+        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource(),true);
+        AdmissionService.validateOperation(admissionReview.getRequest().getOperation());
         if (validateLabel(admissionReview)){
             return getMutateAdmissionResponse(admissionReview);
         }
         else {
-            return getValidatedAdmissionResponse(admissionReview, "Resource NOT Authorized, TimeBom Label is Disabled", false, 403);
+            return getValidatedAdmissionResponse(admissionReview, "Mutation AdmissionReview \"" + getAdmissionUUID(admissionReview) + "\" NOT Authorized, TimeBomb Label is Disabled", false, 403);
         }
     }
 
     public static AdmissionResponse validateAdmissionReview(AdmissionReview admissionReview) throws IOException {
-        logger.info("Validation " + om.writeValueAsString(admissionReview));
-        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource().toString());
-        AdmissionService.validateOperation(admissionReview.getRequest().getOperation().toString());
+        logger.info("Validation AdmissionReview: UUID=\"" +
+                getAdmissionUUID(admissionReview)+ "\", " +
+                getAdmissionResource(admissionReview) + " " +
+                getAdmissionNameSpace(admissionReview) + "/" +
+                getAdmissionName(admissionReview));
+        logger.debug("Validation AdmissionReview: " + om.writeValueAsString(admissionReview));
+        AdmissionService.validateResource(admissionReview.getRequest().getResource().getResource());
+        AdmissionService.validateOperation(admissionReview.getRequest().getOperation());
         if (validateLabel(admissionReview) && validateAnnotation(admissionReview)){
-            return getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
+            return getValidatedAdmissionResponse(admissionReview, "Validadtion AdmissionReview \"" + getAdmissionUUID(admissionReview) + "\" Authorized", true, 200);
         }
         else {
-            return getValidatedAdmissionResponse(admissionReview, "Resource NOT Authorized, invalid or expired validity ", false, 403);
+            return getValidatedAdmissionResponse(admissionReview, "Validadtion AdmissionReview \"" + getAdmissionUUID(admissionReview) + "\" NOT Authorized, invalid or expired validity ", false, 403);
         }
     }
     private static AdmissionResponse getMutateAdmissionResponse(AdmissionReview admissionReview) throws IOException, TimerNotValidException {
         AdmissionResponse admissionResponse = getValidatedAdmissionResponse(admissionReview, "Resource Authorized", true, 200);
         Response response = admissionResponse.getResponse();
         String timer = null;
-        String resourceName = admissionReview.getRequest().getResource().getResource().toString();
+        String resourceName = getAdmissionResource(admissionReview);
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
         boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
 
-        if (validResourcePod == true && validResourceDeployment == false) {
+        if (validResourcePod && !validResourceDeployment) {
             timer = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
         }
-        if (validResourceDeployment == true && validResourcePod == false) {
+        if (validResourceDeployment && !validResourcePod) {
             timer = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
         }
         Integer timerInMinutes = getTimerInMinutes(timer);
@@ -110,49 +132,47 @@ public class AdmissionService {
     static boolean validateAnnotation(AdmissionReview admissionReview){
         try{
             String validityString = null;
-            String resourceName = admissionReview.getRequest().getResource().getResource().toString();
+            String resourceName = admissionReview.getRequest().getResource().getResource();
             boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
             boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
 
-            if (validResourcePod == true && validResourceDeployment == false) {
+            if (validResourcePod && !validResourceDeployment) {
                 validityString = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getKubeomaticIoTimebombValid();
             }
-            if (validResourceDeployment == true && validResourcePod == false) {
+            if (validResourceDeployment && !validResourcePod) {
                 validityString = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombValid();
             }
 
+            assert validityString != null;
             Long validityLong = parseLong(validityString);
 
             return Epoch.isValid(validityLong);
-        } catch (NullPointerException e){
-            logger.error("Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
-            return false;
-        } catch (NumberFormatException e){
-            logger.error("Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + "may be empty, " + e.getMessage());
+        } catch (NullPointerException | NumberFormatException e){
+            logger.error("UUID=\"" + getAdmissionUUID(admissionReview) + "\" Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
             return false;
         }
     }
     static boolean validateLabel(AdmissionReview admissionReview) {
-        String resourceName = admissionReview.getRequest().getResource().getResource().toString();
+        String resourceName = admissionReview.getRequest().getResource().getResource();
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
         boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
         try {
 
-            if (validResourcePod == true && validResourceDeployment == false) {
-                logger.info("POD " + admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb());
-                logger.info("LABEL " + String.valueOf(admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
+            if (validResourcePod && !validResourceDeployment) {
+                logger.debug("UUID=\"" + getAdmissionUUID(admissionReview) + "\" POD " + admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb());
+                logger.debug("UUID=\"" + getAdmissionUUID(admissionReview) + "\" LABEL " + admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled"));
                 return admissionReview.getRequest().getObject().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled");
             } else {
-                logger.info("Deployment " + admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb());
-                logger.info("LABEL " + String.valueOf(admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled")));
+                logger.debug("UUID=\"" + getAdmissionUUID(admissionReview) + "\" Deployment " + admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb());
+                logger.debug("UUID=\"" + getAdmissionUUID(admissionReview) + "\" LABEL " + admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled"));
                 return admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getLabels().getKubeomaticIoTimebomb().equalsIgnoreCase("enabled");
             }
             
         } catch (NullPointerException e) {
-            logger.error("Label " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
+            logger.error("UUID=\"" + getAdmissionUUID(admissionReview) + "\" Label " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
             return false;
         } catch (NumberFormatException e) {
-            logger.error("Label  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
+            logger.error("UUID=\"" + getAdmissionUUID(admissionReview) + "\" Label  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
             return false;
         }
 
@@ -162,7 +182,7 @@ public class AdmissionService {
         try {
             char[] charTimerArray = timer.toCharArray();
             String sanitizedTimer = timer.replaceAll("[A-z]","").replaceAll("\"","");
-            int integerTimer = Integer.valueOf(sanitizedTimer);
+            int integerTimer = Integer.parseInt(sanitizedTimer);
             int numberOfLetters = 0;
             int count = 0;
             String letter = null;
