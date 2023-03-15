@@ -50,7 +50,7 @@ public class AdmissionService {
             return getMutateAdmissionResponse(admissionReview);
         }
         else {
-            return getValidatedAdmissionResponse(admissionReview, "Mutation AdmissionReview \"" + getAdmissionUUID(admissionReview) + "\" NOT Authorized, TimeBom Label is Disabled", false, 403);
+            return getValidatedAdmissionResponse(admissionReview, "Mutation AdmissionReview \"" + getAdmissionUUID(admissionReview) + "\" NOT Authorized, TimeBomb Label is Disabled", false, 403);
         }
     }
 
