@@ -61,7 +61,7 @@ public class KubernetesClient {
                                     if ( ! Epoch.isValid(annotationValidityValue))
                                     {
                                         logger.info("Deleting pod " + namespacePod);
-                                        logger.info("Pod " + namespacePod + " expired at " + Epoch.epochToDate(annotationValidityValue) + ". " + annotationValidityValue.toString() + " smaller than " + Epoch.dateToEpoch().toString());
+                                        logger.info("Pod " + namespacePod + " expired at \"" + Epoch.epochToDate(annotationValidityValue) + ". " + annotationValidityValue.toString() + " smaller than " + Epoch.dateToEpoch().toString());
                                         V1DeleteOptions v1DeleteOptions = new V1DeleteOptions();
                                         v1DeleteOptions.setApiVersion("v1");
                                         V1Pod v1Pod = new V1Pod();
