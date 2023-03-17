@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.common.name }}-schedule
+  namespace: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.schedule.spec.replicas }}
+  selector:
+    {{- with .Values.admission.selector.matchLabels }}
+    matchLabels:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  template:
+    metadata:
+      {{- with .Values.common.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ .Values.common.name }}-sa
+      containers:
+        - image: "{{ .Values.common.registry }}/{{ .Values.common.repository }}/{{ .Values.common.image }}:schedule-{{ .Values.schedule.imageTag | default .Values.common.imageTag }}"
+          name: {{ .Values.common.name }}-schedule
+          volumeMounts:
+            - name: app-properties
+              mountPath: /app/resources
+          ports:
+            - containerPort: 8080
+              name: schedule-svc
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+      volumes:
+        - name: app-properties
+          configMap:
+            name: {{ .Values.common.name }}-schedule
