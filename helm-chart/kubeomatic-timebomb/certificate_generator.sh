@@ -218,7 +218,7 @@ function HELM_GET_VALUE() {
 #  | | | |___ ___) || |
 #  |_| |_____|____/ |_|
 #
-for BIN in {killall,docker,kubectl,kind,mvn,keytool,openssl,pkill,stern}
+for BIN in {yq,jq,keytool,openssl}
 do
   TEST_BIN $BIN
 done
