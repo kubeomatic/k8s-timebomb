@@ -21,6 +21,10 @@ spec:
       containers:
         - image: "{{ .Values.common.registry }}/{{ .Values.common.repository }}/{{ .Values.common.image }}:schedule-{{ .Values.schedule.imageTag | default .Values.common.imageTag }}"
           name: {{ .Values.common.name }}-schedule
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 2000
           volumeMounts:
             - name: app-properties
               mountPath: /app/resources

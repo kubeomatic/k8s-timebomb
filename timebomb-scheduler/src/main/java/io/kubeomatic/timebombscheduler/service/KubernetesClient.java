@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 
+import static java.lang.Long.parseLong;
+
 public class KubernetesClient {
     public static Logger logger = LoggerFactory.getLogger(KubernetesClient.class);
     public static void deleteExpiredPodsInCluster() throws IOException, ApiException {
@@ -55,13 +57,15 @@ public class KubernetesClient {
 
                             boolean annotationValidityKey = annotation.getKey().equals(AppProperties.getProperty(AppProperties.propertyAnnotationValidity));
                             if (annotationValidityKey){
-                                Long annotationValidityValue = Long.valueOf(annotation.getValue());
+//                                Long annotationValidityValue = Long.valueOf(annotation.getValue());
+                                Long annotationValidityValue = parseLong(annotation.getValue());
+                                logger.debug("DATE EPOCH Pod=" + namespacePod + " STRING=" + annotation.getValue() + ". Converted=" + annotationValidityValue + ". H_L=\"" + Epoch.epochToDate(annotationValidityValue) + "\"" );
                                 if ( ! matchValidityAnnotation ){
                                     matchValidityAnnotation = true;
                                     if ( ! Epoch.isValid(annotationValidityValue))
                                     {
                                         logger.info("Deleting pod " + namespacePod);
-                                        logger.info("Pod " + namespacePod + " expired at \"" + Epoch.epochToDate(annotationValidityValue) + ". " + annotationValidityValue.toString() + " smaller than " + Epoch.dateToEpoch().toString());
+                                        logger.info("Pod " + namespacePod + " expired at \"" + Epoch.epochToDate(annotationValidityValue) + ". " + annotationValidityValue + " smaller than " + Epoch.dateToEpoch());
                                         V1DeleteOptions v1DeleteOptions = new V1DeleteOptions();
                                         v1DeleteOptions.setApiVersion("v1");
                                         V1Pod v1Pod = new V1Pod();
@@ -79,7 +83,7 @@ public class KubernetesClient {
                                             );
 
                                         } catch (Exception e) {
-                                            logger.error("Check Service account permission. App may be without privilege to read or delete resources STACK=" + String.valueOf(e));
+                                            logger.error("Check Service account permission. App may be without privilege to read or delete resources STACK=" + e);
                                         }
                                     } else {
                                         logger.info("Pod " + namespacePod + " is not expired. Will expire at " + Epoch.epochToDate(annotationValidityValue) + ". Skipping...");
