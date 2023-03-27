@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  namespace: {{ .Release.Name }}
+  name: {{ .Values.common.name }}-admission
+data:
+  application.properties: |-
+    {{ (.Files.Get "properties/admission.properties") | nindent 4 }}

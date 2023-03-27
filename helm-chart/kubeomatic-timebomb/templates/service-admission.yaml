@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.common.name }}-admission-service
+  namespace: {{ .Release.Name }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Values.common.name }}
+  ports:
+    - name: {{ .Values.common.name }}-admission-port
+      protocol: TCP
+      port: 443
+      targetPort: admission-svc
+  type: ClusterIP

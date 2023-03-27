@@ -1,0 +1,31 @@
+admission:
+  # imageTag: latest
+  spec:
+    replicas: 2
+  selector:
+    matchLabels: {
+      kubeomatic-io-timebomb: enabled
+    }
+    label: "kubeomatic-io-timebomb"
+    values: ["enabled"]
+  
+schedule:
+  # imageTag: latest
+  spec:
+    replicas: 1
+
+
+
+    
+common:
+  name: timebomb
+  registry: "registry.hub.docker.com"
+  repository: kubeomatic
+  image: timebomb
+  imageTag: 0.312
+  labels: {}
+
+# docker pull kubeomatic/timebomb:admission-latest
+
+# {{- range .Values.admission.selector.values  }}
+# {{.}}{{- end }}

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.common.name }}-schedule-service
+  namespace: timebomb
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Values.common.name }}
+  ports:
+    - name: {{ .Values.common.name }}-schedule-port
+      protocol: TCP
+      port: 8080
+      targetPort: schedule-svc
+  type: ClusterIP
