@@ -1,11 +1,13 @@
 admission:
   # imageTag: latest
   spec:
-    replicas: 3
+    replicas: 2
   selector:
     matchLabels: {
-      app.kubernetes.io/name: timebomb
+      kubeomatic-io-timebomb: enabled
     }
+    label: "kubeomatic-io-timebomb"
+    values: ["enabled"]
   
 schedule:
   # imageTag: latest
@@ -21,8 +23,9 @@ common:
   repository: kubeomatic
   image: timebomb
   imageTag: 0.312
-  labels: {
-    app.kubernetes.io/name: timebomb
-  }
+  labels: {}
 
 # docker pull kubeomatic/timebomb:admission-latest
+
+# {{- range .Values.admission.selector.values  }}
+# {{.}}{{- end }}

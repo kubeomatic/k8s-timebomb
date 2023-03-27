@@ -6,15 +6,16 @@ metadata:
 spec:
   replicas: {{ .Values.schedule.spec.replicas }}
   selector:
-    {{- with .Values.admission.selector.matchLabels }}
     matchLabels:
-      {{- toYaml . | nindent 6 }}
-    {{- end }}
+      app.kubernetes.io/name: {{ .Values.common.name }}
   template:
     metadata:
-      {{- with .Values.common.labels }}
       labels:
+        app.kubernetes.io/name: {{ .Values.common.name }}
+      {{- if .Values.common.labels}}
+      {{- with .Values.common.labels }}
         {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
     spec:
       serviceAccountName: {{ .Values.common.name }}-sa
@@ -22,6 +23,8 @@ spec:
         - image: "{{ .Values.common.registry }}/{{ .Values.common.repository }}/{{ .Values.common.image }}:schedule-{{ .Values.schedule.imageTag | default .Values.common.imageTag }}"
           name: {{ .Values.common.name }}-schedule
           securityContext:
+            seccompProfile:
+              type: RuntimeDefault
             allowPrivilegeEscalation: false
             runAsNonRoot: true
             runAsUser: 2000

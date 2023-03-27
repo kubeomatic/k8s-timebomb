@@ -10,8 +10,15 @@ webhooks:
     reinvocationPolicy: Never
     failurePolicy: Ignore
     namespaceSelector:
-      matchLabels:
-        kubeomatic-io-timebomb: "enabled"
+      matchExpressions:
+        - key: {{ .Values.admission.selector.label }}
+          operator: In
+          {{- if .Values.admission.selector.values }}
+          {{- with .Values.admission.selector.values }}
+          values: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+
     rules:
       - apiGroups: ["*"]
         apiVersions: ["v1"]
