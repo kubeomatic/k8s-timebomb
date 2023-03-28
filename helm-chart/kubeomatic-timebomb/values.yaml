@@ -25,7 +25,4 @@ common:
   imageTag: 0.312
   labels: {}
 
-# docker pull kubeomatic/timebomb:admission-latest
-
-# {{- range .Values.admission.selector.values  }}
-# {{.}}{{- end }}
+#https://levelup.gitconnected.com/helm-flow-control-a085a67f22e
