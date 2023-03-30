@@ -20,10 +20,11 @@ public class KubernetesClient {
     public static Logger logger = LoggerFactory.getLogger(KubernetesClient.class);
     public static void deleteExpiredPodsInCluster() throws IOException, ApiException {
         try {
+            logger.info(AppProperties.getProperty(AppProperties.labelSelectorKey) + "=" + AppProperties.getProperty(AppProperties.labelSelectorValue));
             ApiClient client = ClientBuilder.cluster().build();
             Configuration.setDefaultApiClient(client);
             CoreV1Api api = new CoreV1Api();
-            V1PodList list = api.listPodForAllNamespaces(null, null, null, AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + "=enabled" , null, null, null, null, null, null);
+            V1PodList list = api.listPodForAllNamespaces(null, null, null, AppProperties.getProperty(AppProperties.labelSelectorKey) + "=" + AppProperties.getProperty(AppProperties.labelSelectorValue), null, null, null, null, null, null);
             for (V1Pod item : list.getItems())
             {
                 String namespacePod = item.getMetadata().getNamespace() + "/" + item.getMetadata().getName();
