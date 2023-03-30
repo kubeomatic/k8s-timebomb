@@ -20,7 +20,7 @@ public class KubernetesClient {
     public static Logger logger = LoggerFactory.getLogger(KubernetesClient.class);
     public static void deleteExpiredPodsInCluster() throws IOException, ApiException {
         try {
-            logger.info(AppProperties.getProperty(AppProperties.labelSelectorKey) + "=" + AppProperties.getProperty(AppProperties.labelSelectorValue));
+//            logger.info(AppProperties.getProperty(AppProperties.labelSelectorKey) + "=" + AppProperties.getProperty(AppProperties.labelSelectorValue));
             ApiClient client = ClientBuilder.cluster().build();
             Configuration.setDefaultApiClient(client);
             CoreV1Api api = new CoreV1Api();
