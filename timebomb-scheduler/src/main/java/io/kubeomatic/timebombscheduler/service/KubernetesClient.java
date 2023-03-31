@@ -24,6 +24,7 @@ public class KubernetesClient {
 
             String[] values = AppProperties.getProperty(AppProperties.labelSelectorValue).split(";");
             for ( String value : values) {
+                logger.info("Searching pods to delete. MatchLabel=" + AppProperties.getProperty(AppProperties.labelSelectorKey) + "=" + value);
                 ApiClient client = ClientBuilder.cluster().build();
                 Configuration.setDefaultApiClient(client);
                 CoreV1Api api = new CoreV1Api();
