@@ -18,11 +18,11 @@ schedule:
 
     
 common:
-  name: timebomb
+  name: "timebomb"
   registry: "registry.hub.docker.com"
-  repository: kubeomatic
-  image: timebomb
-  imageTag: 0.312
+  repository: "kubeomatic/"
+  image: "timebomb"
+  imageTag: "0.320"
   labels: {}
 
 #https://levelup.gitconnected.com/helm-flow-control-a085a67f22e
