@@ -1,0 +1,6 @@
+helm upgrade \
+        --install \
+        -n timebomb timebomb \
+        -f kubeomatic-timebomb/values.yaml \
+        --set "certificate.rootCaCert=$(cat tmp/rootCA.crt |base64 -w0),certificate.keyStore=$(cat tmp/ks.p12|base64 -w0)" \
+        kubeomatic-timebomb

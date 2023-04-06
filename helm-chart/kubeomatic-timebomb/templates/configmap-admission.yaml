@@ -5,4 +5,4 @@ metadata:
   name: {{ .Values.common.name }}-admission
 data:
   application.properties: |-
-    {{ (.Files.Get "properties/admission.properties") | nindent 4 }}
+    {{- .Values.admission.config | nindent 4}}

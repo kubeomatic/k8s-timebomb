@@ -5,4 +5,4 @@ metadata:
   name: {{ .Values.common.name }}-schedule
 data:
   application.properties: |-
-    {{ (.Files.Get "properties/schedule.properties") | nindent 4 }}
+    {{- .Values.schedule.config | nindent 4}}

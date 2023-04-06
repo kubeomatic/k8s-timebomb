@@ -188,11 +188,11 @@ function CONCAT_CA() {
 function CERTIFICATE() {
   if [[ "$SSL_SUBJECT" == "" ]]
   then
-    export SSL_SUBJECT="'/C="$SSL_CERT_C"/ST="$SSL_CERT_ST"/L="$SSL_CERT_L"/O="$SSL_CERT_O"/OU="$SSL_CERT_OU"/CN="$(HELM_GET_VALUE values.yaml '.common.name')"-admission-service."$K8S_NAMESPACE".svc.cluster.local/emailAddress="$SSL_CERT_EMAIL"'"
+    export SSL_SUBJECT="'/C="$SSL_CERT_C"/ST="$SSL_CERT_ST"/L="$SSL_CERT_L"/O="$SSL_CERT_O"/OU="$SSL_CERT_OU"/CN="$K8S_NAME"-admission-service."$K8S_NAMESPACE".svc.cluster.local/emailAddress="$SSL_CERT_EMAIL"'"
   fi
   if [[ "$SSL_ALTNAME" == "" ]]
   then
-    export SSL_ALTNAME="subjectAltName=DNS:"$(HELM_GET_VALUE values.yaml '.common.name')"-admission-service."$K8S_NAMESPACE".svc.cluster.local,DNS:"$(HELM_GET_VALUE values.yaml '.common.name')"-admission-service."$K8S_NAMESPACE".svc"
+    export SSL_ALTNAME="subjectAltName=DNS:"$K8S_NAME"-admission-service."$K8S_NAMESPACE".svc.cluster.local,DNS:"$K8S_NAME"-admission-service."$K8S_NAMESPACE".svc"
   fi
   echo $SSL_SUBJECT
   echo $SSL_ALTNAME
@@ -205,8 +205,8 @@ function CERTIFICATE() {
   RUN "openssl req -new -key $TMPBASEDIR/$SSL_DEVICE_KEY -out $TMPBASEDIR/$SSL_REQUEST_KEY -subj $SSL_SUBJECT"
   RUN "openssl x509 -req -in $TMPBASEDIR/$SSL_REQUEST_KEY -CA $TMPBASEDIR/$SSL_CA_CERT -CAkey $TMPBASEDIR/$SSL_CA_KEY -CAcreateserial -out $TMPBASEDIR/$SSL_DEVICE_CERT -days 3650 -sha256 -passin pass:$SSL_PASS -extfile <(printf "$SSL_ALTNAME")"
   RUN "openssl pkcs12 -export -in $TMPBASEDIR/$SSL_DEVICE_CERT -inkey  $TMPBASEDIR/$SSL_DEVICE_KEY -name awh -out $TMPBASEDIR/SRC-$SSL_KS_P12 -passin pass:$SSL_PASS -passout pass:$SSL_PASS"
-  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
-  RUN "keytool -importkeystore -destkeystore $BASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+  RUN "keytool -importkeystore -destkeystore $TMPBASEDIR/$SSL_KS_P12 -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype pkcs12 -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
+  RUN "keytool -importkeystore -destkeystore $TMPBASEDIR/$SSL_KS_JKS -srckeystore $TMPBASEDIR/SRC-$SSL_KS_P12 -srcstoretype PKCS12 -deststoretype jks  -srcstorepass $SSL_PASS -deststorepass $SSL_PASS"
 
 }
 function HELM_GET_VALUE() {
@@ -251,7 +251,7 @@ export SSL_CERT_OU=kubeomatic
 # export SSL_ALTNAME="subjectAltName=DNS:timebomb-admission-service.timebomb.svc.cluster.local,DNS:timebomb-admission-service.timebomb.svc"
 export TMPBASEDIR=tmp
 export BASEDIR=extra
-export K8S_NAMESPACE=timebomb
+
 export CENSORSTRING=$SSL_PASS
 # ____  ____  _____ ____   _    ____  _____
 #|  _ \|  _ \| ____|  _ \ / \  |  _ \| ____|
@@ -259,17 +259,21 @@ export CENSORSTRING=$SSL_PASS
 #|  __/|  _ <| |___|  __/ ___ \|  _ <| |___
 #|_|   |_| \_\_____|_| /_/   \_\_| \_\_____|
 #
-
+if [ $# -eq 1 ] && [ -f $1 ]
+then 
+  export VALUES=$1
+else
+  echo Not Enought Arguments
+  exit 1 
+fi
+export K8S_NAMESPACE=$(HELM_GET_VALUE $VALUES '.common.nameSpace')
+export K8S_NAME=$(HELM_GET_VALUE $VALUES '.common.name')
 export WORKDIR=$(pwd)
 cd $WORKDIR
 
-if ! [ -f $BASEDIR/$SSL_KS_P12 ]
-then
-  RUN "rm -f $TMPBASEDIR/*" ignore
-  RUN "rm -f $BASEDIR/*" ignore
-fi
-RUN "mkdir -p $BASEDIR" ignore
-RUN "mkdir -p $TMPBASEDIR" ignore
+
+
+
 
 # ____  _   _ _   _ ____
 #|  _ \| | | | \ | / ___|
@@ -277,6 +281,27 @@ RUN "mkdir -p $TMPBASEDIR" ignore
 #|  _ <| |_| | |\  |___) |
 #|_| \_\\___/|_| \_|____/
 #
+# echo $TMPBASEDIR/$SSL_KS_P12
+# echo $VALUES
+# file $VALUES
+# exit
+if ! [ -f $TMPBASEDIR/$SSL_KS_P12 ]
+then
+  if ! [ -f $TMPBASEDIR ]
+  then
+    RUN "mkdir -p $TMPBASEDIR" ignore
+  fi
+  CERTIFICATE
+else  
+  echo Skippping Certificate creation
+fi
 
-CERTIFICATE
+#RUN "kubectl create ns $K8S_NAMESPACE"
+
+# if [ -f $TMPBASEDIR/$SSL_KS_P12 ]
+# then
+#   RUN "kubectl -n $K8S_NAMESPACE create secret generic $K8S_NAME-secret  --from-file $TMPBASEDIR/$SSL_KS_P12"
+# else  
+#   echo Keystore \"$TMPBASEDIR/$SSL_KS_P12\" not found. Could not crete secret.
+# fi
 

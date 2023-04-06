@@ -31,4 +31,4 @@ webhooks:
         name: {{ .Values.common.name }}-admission-service
         path: /api/mutation
         port: 443
-      caBundle: {{ .Files.Get "tmp/rootCA.crt" | b64enc }}
+      caBundle: {{ .Values.certificate.rootCaCert  }}
