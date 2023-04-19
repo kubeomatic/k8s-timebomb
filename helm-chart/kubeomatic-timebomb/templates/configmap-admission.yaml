@@ -1,0 +1,22 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  namespace: {{ .Release.Name }}
+  name: {{ .Values.common.name }}-admission
+data:
+  application.properties: |-
+    server.ssl.key-store-type=PKCS12
+    server.ssl.key-store=extra/ks.p12
+    server.ssl.key-store-password=${KEYSTORE_PASS:abcabc}
+    server.ssl.key-alias=awh
+    server.ssl.enabled=true
+    kubeomatic-io.timebomb.admission.review.apiversion=admission.k8s.io/v1
+    kubeomatic-io.timebomb.admission.review.kind=AdmissionReview
+    kubeomatic-io.timebomb.admission.response.patch-type=JSONPatch
+    kubeomatic-io.timebomb.schedule.interval.seconds=JSONPatch
+    kubeomatic-io.timebomb.timer.default=1080
+    kubeomatic-io.timebomb.label.timebomb=kubeomatic-io-timebomb
+    kubeomatic-io.timebomb.annotation.valid=kubeomatic-io-timebomb-valid
+    kubeomatic-io.timebomb.annotation.sku=kubeomatic-io-timebomb-sku
+    kubeomatic-io.timebomb.annotation.description=kubeomatic-io-timebomb-description
+    {{- .Values.admission.config | nindent 4}}

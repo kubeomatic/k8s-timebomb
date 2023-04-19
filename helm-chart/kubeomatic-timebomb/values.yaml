@@ -1,0 +1,34 @@
+admission:
+  # imageTag: latest
+  spec:
+    replicas: 2
+  config: |-
+    server.port=8443
+    logging.level.root=INFO
+    management.endpoint.health.probes.enabled=true
+  selector:
+    label: "kubeomatic-io-timebomb-cluster"
+    values: ["dev-all","dev-02"]
+  
+schedule:
+  # imageTag: latest
+  spec:
+    replicas: 1
+  config: |-
+    server.port=8080
+    logging.level.root=INFO
+    management.endpoint.health.probes.enabled=true
+    kubeomatic-io.timebomb.label.selector.value=dev-02;dev-all
+    cron.expression= */15 * * * * *
+certificate:
+  rootCaCert: ""
+  keyStore: ""
+  keyStorePAss: "abcabc"
+common:
+  name: "timebomb"
+  nameSpace: "timebomb"
+  registry: "registry.hub.docker.com"
+  repository: "kubeomatic/"
+  image: "timebomb"
+  imageTag: "0.322"
+  labels: {}

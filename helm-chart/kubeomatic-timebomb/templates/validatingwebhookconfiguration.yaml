@@ -1,0 +1,32 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: "{{ .Values.common.name }}-admission-service.{{ .Release.Name }}.svc.cluster.local"
+webhooks:
+  - name: "{{ .Values.common.name }}-admission-service.{{ .Release.Name }}.svc.cluster.local"
+    admissionReviewVersions: [ "v1" ]
+    sideEffects: None
+    #    timeoutSeconds: 5
+    failurePolicy: Ignore
+    namespaceSelector:
+      matchExpressions:
+        - key: {{ .Values.admission.selector.label }}
+          operator: In
+          {{- if .Values.admission.selector.values }}
+          {{- with .Values.admission.selector.values }}
+          values: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+    rules:
+      - apiGroups: ["*"]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods","deployments"]
+        scope: "*"
+    clientConfig:
+      service:
+        namespace: {{ .Release.Name }}
+        name: {{ .Values.common.name }}-admission-service
+        path: /api/validation
+        port: 443
+      caBundle: {{ .Values.certificate.rootCaCert  }}
