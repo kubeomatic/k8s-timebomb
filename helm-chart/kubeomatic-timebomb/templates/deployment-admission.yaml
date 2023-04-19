@@ -22,6 +22,12 @@ spec:
       containers:
         - image: "{{ .Values.common.registry }}/{{ .Values.common.repository }}{{ .Values.common.image }}:admission-{{ .Values.schedule.imageTag | default .Values.common.imageTag }}"
           name: {{ .Values.common.name }}-admission
+          env:
+            - name: KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.common.name }}-secret
+                  key: ks.secret
           securityContext:
             seccompProfile:
               type: RuntimeDefault

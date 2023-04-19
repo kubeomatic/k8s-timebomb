@@ -5,4 +5,7 @@ metadata:
   name: {{ .Values.common.name }}-schedule
 data:
   application.properties: |-
+    kubeomatic-io.timebomb.label.selector.key=kubeomatic-io-timebomb-cluster
+    kubeomatic-io.timebomb.label.timebomb=kubeomatic-io-timebomb
+    kubeomatic-io.timebomb.annotation.valid=kubeomatic-io-timebomb-valid
     {{- .Values.schedule.config | nindent 4}}
