@@ -91,7 +91,7 @@ function GENPASS() {
     esac
 }
 function CENSOR() {
-    coproc stdbuf -o0 sed "s/$1/***/g" &
+    coproc stdbuf -o0 sed "s/"$1"/***/g" &
     while read -r LINE
     do
         echo "$LINE" >&${COPROC[1]}
@@ -238,7 +238,6 @@ export SSL_REQUEST_KEY=device.csr
 export SSL_DEVICE_CERT=device.crt
 export SSL_KS_P12=ks.p12
 export SSL_KS_JKS=ks.jks
-export SSL_PASS=abcabc
 export SSL_LENGTH=2048
 export SSL_EXPIRE=3650
 export SSL_CERT_EMAIL=fake@kubeomatic.org
@@ -252,7 +251,7 @@ export SSL_CERT_OU=kubeomatic
 export TMPBASEDIR=tmp
 export BASEDIR=extra
 
-export CENSORSTRING=$SSL_PASS
+
 # ____  ____  _____ ____   _    ____  _____
 #|  _ \|  _ \| ____|  _ \ / \  |  _ \| ____|
 #| |_) | |_) |  _| | |_) / _ \ | |_) |  _|
@@ -260,15 +259,17 @@ export CENSORSTRING=$SSL_PASS
 #|_|   |_| \_\_____|_| /_/   \_\_| \_\_____|
 #
 if [ $# -eq 1 ] && [ -f $1 ]
-then 
+then
   export VALUES=$1
 else
   echo Not Enought Arguments
-  exit 1 
+  exit 1
 fi
+export SSL_PASS="$(HELM_GET_VALUE $VALUES '.certificate.keyStorePAss')"
 export K8S_NAMESPACE=$(HELM_GET_VALUE $VALUES '.common.nameSpace')
 export K8S_NAME=$(HELM_GET_VALUE $VALUES '.common.name')
 export WORKDIR=$(pwd)
+export CENSORSTRING=$SSL_PASS
 cd $WORKDIR
 
 
