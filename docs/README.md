@@ -1,3 +1,5 @@
+# THIS DOCUMENTATION IS UNDER CUNSTRUCTION. THE INFORMATION HERE MAY BE INCOMPLETE - 2023/04
+
 # KubeOMatic
 
 The TimeBomb solution is a Java Spring app which rely on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validty to PODs based on a timer annotation.
