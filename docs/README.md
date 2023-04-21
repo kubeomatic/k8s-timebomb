@@ -32,7 +32,7 @@ You may have different environments for each purpose in software development, qu
 
 After an application has passed security tests, unit test and been deployed in a quality assurance cluster, this app may not be required anymore running on a development cluster or any other inthermediate environment. With TimeBomb you can unprovision the app to reduce infrastructure cost.
 
-You may have similar scenario for an app that is no in active development anymore and wish to be unprovisioned after few days.
+You may have similar scenario for an app that is not in active development anymore and wish to be unprovisioned after few days from non productive environments.
 
 TimeBomb will keep your footprint small in your cluster.
 
