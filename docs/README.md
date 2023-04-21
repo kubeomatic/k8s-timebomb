@@ -1,6 +1,7 @@
 ```diff
 - THIS DOCUMENTATION IS UNDER CUNSTRUCTION. THE INFORMATION HERE MAY BE INCOMPLETE - 2023/04
 ```
+$${\color{red}THIS \space DOCUMENTATION \space IS \space UNDER \space CUNSTRUCTION. \space THE \space INFORMATION \space HERE \space MAY \space BE \space INCOMPLETE \space - \space 2023/04}$$
 ***
 
 # TimeBomb
