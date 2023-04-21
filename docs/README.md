@@ -17,7 +17,7 @@ After a POD is expired, EPOCH number inferior to current EPOCH, the schedule wil
 You can warm up the app again by two methods.
 
 1. Redeploy your app, so the mutation process can calculate a new validity based on the timer.
-2. Do a JsonPatch on the resrouce by extending the validity annotation.
+2. Do a JsonPatch on the resource by extending the validity annotation.
 
 ***
 
