@@ -49,5 +49,6 @@ You can warm up all apps in a cluster using a simple command of JsonPatch with k
 ## Installation
 ### HELM Values
 ### Certificate
+### Install
 ***
 ## Extend Validity
