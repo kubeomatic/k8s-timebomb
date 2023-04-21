@@ -54,6 +54,8 @@ You can warm up all apps in a cluster using a simple command of JsonPatch with k
 ## Architecture
 ***
 ## Installation
+### HELM CHART
+https://helmchart.kubeomatic.io/timebomb/
 ### HELM Values
 ### Certificate
 ### Install
