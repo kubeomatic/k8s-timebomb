@@ -14,6 +14,11 @@ Deployments and PODs will only be created if they have a valid validity. An [EPO
 
 After a POD is expired, EPOCH number inferior to current EPOCH, the schedule will delete the expired POD and the replicaset will not be able to deploy new PODs with expired validity.
 
+You can warm up the app again by two methods.
+
+1. Redploy your app, so the mutation process can calculate a new validity based on the timer.
+2. Make a JsonPatch extending the validity annotation.
+
 ***
 
 ## Applicability
