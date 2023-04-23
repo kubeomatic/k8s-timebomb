@@ -139,7 +139,8 @@ $ helm upgrade \
 ---
 
 ## Extend Validity
-After a validity been expired all resource for a solution will be there, in the cluster, except by the pods.
+After a validity been expired all resource for a solution will be there, in the cluster, except all the pods.
+
 Example:
 
 ```shell
@@ -181,6 +182,6 @@ NAME                                          DESIRED   CURRENT   READY   AGE
 replicaset.apps/nginx-deployment-6598d88757   0         0         0       3d22h
 replicaset.apps/nginx-deployment-fc8ff7b68    8         8         8       58s
 ```
-You may find a scenario where the replicaset still reflect the old validity annotation. In tha case you may delete the outdated replicaset definition.
+You may find a scenario where the replicaset still reflect the old validity annotation. In this case you may delete the outdated replicaset definition.
 
-To make things easer, there is a script that help to those operations in large scale and is ideal to use with [RUNDECK](https://www.rundeck.com/) or other automation solutions.
+To make things easer, there is a [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/tools/extend-timer-bash/run.sh) that help to those operations in large scale and is ideal to use with [RUNDECK](https://www.rundeck.com/) or other automation solutions.
