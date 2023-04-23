@@ -8,7 +8,7 @@
 
 TimeBomb does what the name suggests. You can add a timer to explode something. In this case it'll "explode" kubernetes PODs.
 
-The TimeBomb solution is a Spring Boot app which rely on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validly to PODs based on a timer annotation.
+The TimeBomb solution is a Spring Boot app which rely on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validly to PODs, based on a timer annotation, and prevent expired PODs to be deployed, with expired validity.
 
 When you deploy an app in a kubernetes cluster TimeBomb will read a timer annotation and sum this timer to the current time to create a validity. If you add a timer of 15 minutes, a validity of the current time + 15 minutes will be added to the deployment as an annotation. This process is done using a "mutation webhook".
 
