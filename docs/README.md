@@ -57,6 +57,7 @@ You can warm up all PODs in a cluster using a simple command of JsonPatch with k
 
 ## Architecture
 
+![arquitetura](./media/architecture.png)
 ---
 
 ## Installation
@@ -188,6 +189,6 @@ replicaset.apps/nginx-deployment-fc8ff7b68    8         8         8       58s
 ```
 You may find a scenario where the replicaset still reflect the old validity annotation. In this case you may have to delete the outdated replicaset definition.
 
-To make things easer, there is a [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/tools/extend-timer-bash/run.sh) that may help you with those operations.Specially in large scale.
+To make things easer, there is a [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/tools/extend-timer-bash/run.sh) that may help you with those operations. Specially in large scale cluster.
 
 This script is ideal to use with [RUNDECK](https://www.rundeck.com/) or other automation solutions.
