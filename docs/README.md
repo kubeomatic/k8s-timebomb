@@ -57,7 +57,7 @@ You can warm up all PODs in a cluster using a simple command of JsonPatch with k
 
 ## Architecture
 
-![arquitetura](./media/architecture.png)
+![architecture](./media/architecture.png)
 ---
 
 ## Installation
@@ -242,7 +242,7 @@ kubeomatic-io-timebomb-timer: "24h"
 kubeomatic-io-timebomb-timer: "1d"
 ```
 
-"kubeomatic-io-timebomb-sku" is an optional annotation which is usefull with the "Extend Validity" script, where you can warm up all your pods that match the entire SKU expression or part of it.
+"kubeomatic-io-timebomb-sku" is an optional annotation which is useful with the "Extend Validity" script, where you can warm up all your pods that match the entire SKU expression or part of it.
 
 Example:
 ```shell
