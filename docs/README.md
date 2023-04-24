@@ -57,7 +57,7 @@ You can warm up all PODs in a cluster using a simple command of JsonPatch with k
 
 ## Architecture
 
-![arquitetura](./media/architecture.png)
+![architecture](./media/architecture.png)
 ---
 
 ## Installation
@@ -138,11 +138,150 @@ $ helm upgrade \
     timebomb/kubeomatic-timebomb
 ```
 ---
+## How to Set up an App
+This topic will not cover label and annotation customization.
+
+Example of a simple NGINX deployment:
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx
+  labels:
+    kubeomatic-io-timebomb: "enabled"
+    kubeomatic-io-timebomb-cluster: "dev-all"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx
+  labels:
+    app: nginx
+    kubeomatic-io-timebomb: "enabled"
+    kubeomatic-io-timebomb-cluster: "dev-all"
+spec:
+  replicas: 8
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        kubeomatic-io-timebomb: "enabled"
+        kubeomatic-io-timebomb-cluster: "dev-all"
+      annotations:
+        kubeomatic-io-timebomb-timer: "1m"
+        kubeomatic-io-timebomb-sku: "/grandfather/father/son"
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 80
+
+```
+### NameSpace Labels
+For the solution to work the namespace needs to have a label that match the selector used to deploy TimeBomb.
+
+ValidatingWebhookConfiguration and MutatingWebhookConfiguration uses this label to tell Kubernetes API which namespaces will have their requests, AdmissionReviews, sent to the TimeBomb solution.
+
+In the example below the matching label is "kubeomatic-io-timebomb-cluster" with value "dev-all". So, if you have two development clusters and both clusters has the TimeBomb solution you can specify in each cluster your app will be "exploded". At dev-01, dev-02 or dev-all.
+```yaml
+kubeomatic-io-timebomb-cluster: "dev-all"
+```
+The label below is used by the app to check if the solution is active.
+
+Is an extra layer of protection to avoid unwanted deletion of PODs.
+```yaml
+kubeomatic-io-timebomb: "enabled"
+```
+
+### Deployments Labels
+
+Deployments have the same labels a nameSpace does in his labels and at template labels.
+
+This is done to propagate the labels to the PODs.
+
+```yaml
+metadata:
+  labels:
+    kubeomatic-io-timebomb: "enabled"
+    kubeomatic-io-timebomb-cluster: "dev-all"
+spec:
+  template:
+    metadata:
+      labels:
+        kubeomatic-io-timebomb: "enabled"
+        kubeomatic-io-timebomb-cluster: "dev-all"
+```
+
+### Deployments Template Annotations
+```yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        kubeomatic-io-timebomb-timer: "1m"
+        kubeomatic-io-timebomb-sku: "/grandfather/father/son"
+```
+
+"kubeomatic-io-timebomb-timer" is the only required annotation. It's used to set the timer. 
+
+Valid suffix are s(for seconds), m(for minutes), h(for hours) and d(for days):
+
+Example:
+```yaml
+kubeomatic-io-timebomb-timer: "86400s"
+# or
+kubeomatic-io-timebomb-timer: "1440m"
+# or
+kubeomatic-io-timebomb-timer: "24h"
+# or
+kubeomatic-io-timebomb-timer: "1d"
+```
+
+"kubeomatic-io-timebomb-sku" is an optional annotation which is useful with the "Extend Validity" script, where you can warm up all your pods that match the entire SKU expression or part of it.
+
+Example:
+```shell
+# Will change the validity of an App that match SKU "/tribe/squad/app" to 60 minutes
+$ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/tribe/squad/app" 60
+
+# Will change the validity of all Apps in the squad "/tribe/squad" to 60 minutes
+$ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/tribe/squad" 60
+
+# Will change the validity of all Apps in the tribe "/tribe" to 60 minutes
+$ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/tribe" 60
+
+# Will change the validity of all Apps in the cluster "/" to 60 minutes
+$ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/" 60
+```
+### Deployment Final State
+During the mutation fase the admission app will read the timer and add the validity.
+
+It'll add "kubeomatic-io-timebomb-valid". An annotation with the EPOCH number when the POD should be deleted.
+
+The annotation "kubeomatic-io-timebomb-valid-human" will be added only to make easy to read the expiration date of the resource.
+```yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        kubeomatic-io-timebomb-timer: "1h"
+        kubeomatic-io-timebomb-sku: "/grandfather/father/son"
+        kubeomatic-io-timebomb-valid: "1682287397"
+        kubeomatic-io-timebomb-valid-human: Wed Apr 19 22:21:05 GMT 2023
+```
+
+Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-io-timebomb-valid-human" on your deployment manifest. Those labels are added on the fly by the mutation fase.
+
+***
+
 
 ## Extend Validity
 After a validity has expired and the PODs deleted, all others resources for a solution will be there, in the cluster. Only PODs are deletes. Any other resource then PODs are not deleted.
-
-Example:
 
 Below is a NGINX namespace with expired validity.
 
