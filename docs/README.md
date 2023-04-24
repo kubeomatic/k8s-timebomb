@@ -173,7 +173,7 @@ spec:
         kubeomatic-io-timebomb-cluster: "dev-all"
       annotations:
         kubeomatic-io-timebomb-timer: "1m"
-        kubeomatic-io-timebomb-sku: "/avo/pai/filho"
+        kubeomatic-io-timebomb-sku: "/grandfather/father/son"
     spec:
       containers:
         - name: nginx
@@ -187,11 +187,11 @@ For the solution to work the namespace needs to have a label that match the sele
 
 ValidatingWebhookConfiguration and MutatingWebhookConfiguration uses this label to tell Kubernetes API which namespaces will have their requests, AdmissionReviews, sent to the TimeBomb solution.
 
-In the example below the matching label is "kubeomatic-io-timebomb-cluster" with value "dev-all". So, if you have two development clusters and both clusters has the TimeBomb solution you can specify in each cluster your app will be "exploded" at dev-01, dev-02 or dev-all.
+In the example below the matching label is "kubeomatic-io-timebomb-cluster" with value "dev-all". So, if you have two development clusters and both clusters has the TimeBomb solution you can specify in each cluster your app will be "exploded". At dev-01, dev-02 or dev-all.
 ```yaml
 kubeomatic-io-timebomb-cluster: "dev-all"
 ```
-The label below is used by the app to check if the solution is active in the namespace.
+The label below is used by the app to check if the solution is active.
 
 Is an extra layer of protection to avoid unwanted deletion of PODs.
 ```yaml
@@ -227,7 +227,7 @@ spec:
         kubeomatic-io-timebomb-sku: "/grandfather/father/son"
 ```
 
-"kubeomatic-io-timebomb-timer" is arequired annotation. It's used to set the timer. 
+"kubeomatic-io-timebomb-timer" is the only required annotation. It's used to set the timer. 
 
 Valid suffix are s(for seconds), m(for minutes), h(for hours) and d(for days):
 
@@ -258,12 +258,12 @@ $ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/tribe" 60
 # Will change the validity of all Apps in the cluster "/" to 60 minutes
 $ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/" 60
 ```
-
+### Deployment Final State
 During the mutation fase the admission app will read the timer and add the validity.
 
-It'll add "kubeomatic-io-timebomb-valid". An annotation with the EPOCH number when the POD should be deleted after.
+It'll add "kubeomatic-io-timebomb-valid". An annotation with the EPOCH number when the POD should be deleted.
 
-the annotation "kubeomatic-io-timebomb-valid-human" will be added only to make easy to read the expiration date of the resource.
+The annotation "kubeomatic-io-timebomb-valid-human" will be added only to make easy to read the expiration date of the resource.
 ```yaml
 spec:
   template:
@@ -275,7 +275,7 @@ spec:
         kubeomatic-io-timebomb-valid-human: Wed Apr 19 22:21:05 GMT 2023
 ```
 
-Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-io-timebomb-valid-human" on your deployment manifest. Those labels are added on the fly during the mutation fase.
+Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-io-timebomb-valid-human" on your deployment manifest. Those labels are added on the fly by the mutation fase.
 
 ***
 
