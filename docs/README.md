@@ -32,7 +32,7 @@ Thus, the growth of PODs forces the increase in the number of nodes. And you are
 
 ### Proof of Concept
 
-TimeBom is great for POC where you may try a new tool/solution and don't want to forget to remove it from your test cluster.
+TimeBomb is great for POC where you may try a new tool/solution and don't want to forget to remove it from your test cluster.
 
 With TimeBomb it will happen automatically. TimeBomb will delete ir for you after the timer expire.
 
