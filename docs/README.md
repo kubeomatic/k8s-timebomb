@@ -6,29 +6,29 @@
 
 # TimeBomb
 
-TimeBomb does what the name suggests. You can add a timer to explode something. In this case it'll "explode" kubernetes PODs.
+TimeBomb does what the name suggests. You can add a timer to explode something. In this case, it'll "explode" Kubernetes PODs.
 
-The TimeBomb solution is a Spring Boot app which rely on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validity to PODs, based on a timer annotation, and prevent expired PODs to be deployed, with expired validity.
+The TimeBomb solution is a Spring Boot app that relies on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validity to PODs, based on a timer annotation, and prevent expired PODs from being deployed with expired validity.
 
-When you deploy an app in a kubernetes cluster TimeBomb will read a timer annotation and sum this timer to the current time to create a validity. If you add a timer of 15 minutes, a validity of the current time + 15 minutes will be added to the deployment as an annotation. This process is done using a "mutation webhook".
+When you deploy an app in a Kubernetes cluster, TimeBomb will read a timer annotation and sum this timer to the current time to create a "validity". If you add a timer of 15 minutes, the validity of the current time + 15 minutes will be added to the deployment as an annotation. This process is done using a "mutation webhook".
 
-Deployments and PODs will only be created if they have a valid validity. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
+Deployments and PODs will only be created if they have valid validity. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
 
 After a POD is expired, EPOCH number inferior to current EPOCH, the schedule will delete the expired POD and the replicaset will not be able to deploy new PODs with expired validity.
 
 You can warm up the app again by two methods.
 
-1. Redeploy your app, so the mutation process can calculate a new validity based on the timer.
+1. Redeploy your app, so the mutation process can calculate new validity based on the timer.
 2. Do a JsonPatch on the resource by extending the validity annotation.
 
 ---
 
 ## Applicability
 
-In a cloud environment a kubernetes cluster is a bunch of computers.
+In a cloud environment, a kubernetes cluster is a bunch of computers.
 
 Those computers are called "nodes" and the growth of the cluster is pushed by the increase in the number of PODs running.
-Thus, the growth of PODs forces the increase in the number of nodes. And you are charged by the cloud provider by the amount of compute, CPU, that is consumed. TimeBomb will reduce the PODs running, so it can reduce the number of nodes.
+Thus, the growth of PODs forces the increase in the number of nodes. And you're charged by the cloud provider by the amount of compute, CPU, that is consumed. TimeBomb will reduce the PODs running, so it can reduce the number of nodes.
 
 ### Proof of Concept
 
@@ -48,7 +48,7 @@ TimeBomb will keep your footprint small in your cluster.
 
 ### DR - Disaster Recovery
 
-You may have a disaster recovery cluster but do not want to keep all apps running there, but at the same time wishes to run all apps there for an amount of time to validate connectivity and functionality.
+You may have a disaster recovery cluster but don't want to keep all apps running there, but at the same time wishes to run all apps there for an amount of time to validate connectivity and functionality.
 
 TimeBomb will remove all apps PODs from the cluster after the expiration of the validity.
 You can warm up all PODs in a cluster using a simple command of JsonPatch with kubectl to extend the validity. This command is offered here with the solution and explained in the section "Extend Validity".
@@ -281,7 +281,7 @@ Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-i
 
 
 ## Extend Validity
-After a validity has expired and the PODs deleted, all others resources for a solution will be there, in the cluster. Only PODs are deleted. Any other resource then PODs are not deleted.
+After a validity has expired and the PODs deleted, all others resources for a solution will be there, in the cluster. Only PODs are deleted. Any other resource then PODs aren't deleted.
 
 Below is a NGINX namespace with expired validity.
 
