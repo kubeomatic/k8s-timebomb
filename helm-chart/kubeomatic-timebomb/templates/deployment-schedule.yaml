@@ -28,7 +28,11 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
             runAsUser: 2000
+            readOnlyRootFilesystem: true
+            privileged: false
           volumeMounts:
+            - name: tmpfs-tmp
+              mountPath: /tmp
             - name: app-properties
               mountPath: /app/resources
           ports:
@@ -49,6 +53,8 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 10
       volumes:
+        - name: tmpfs-tmp
+          emptyDir: {}
         - name: app-properties
           configMap:
             name: {{ .Values.common.name }}-schedule

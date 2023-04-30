@@ -32,9 +32,9 @@ Thus, the growth of PODs forces the increase in the number of nodes. And you are
 
 ### Proof of Concept
 
-TimeBom is great for POC where you may try a new tool/solution and don't want to forget to remove it from your test cluster.
+TimeBomb is great for POC where you may try a new tool/solution and don't want to forget to remove it from your test cluster.
 
-With TimeBomb it will happen automatically. TimeBomb will delete ir for you after the timer expire.
+With TimeBomb it will happen automatically. TimeBomb will delete it for you after the timer expire.
 
 ### Development and test environment
 
@@ -111,7 +111,7 @@ Kubernetes will send AdmissionReviews to the admission app only using TLS.
 
 So, a [CA, Certificate authority,](https://en.wikipedia.org/wiki/Certificate_authority) with a certificate needs to be emitted. This can be done using a self-signed certificate.
 
-ValidatingWebhookConfiguration and MutatingWebhookConfiguration needs to know the CA used to sign the certificate and the certificate needs to match the [DNS for Services](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) in the cluster.
+ValidatingWebhookConfiguration and MutatingWebhookConfiguration must know the CA used to sign the certificate and the certificate needs to match the [DNS for Services](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) on the cluster.
 
 For that, there is a script that can be used to generate the Certificate authority, certificate and java keystore.
 
@@ -185,7 +185,7 @@ spec:
 ### NameSpace Labels
 For the solution to work the namespace needs to have a label that match the selector used to deploy TimeBomb.
 
-ValidatingWebhookConfiguration and MutatingWebhookConfiguration uses this label to tell Kubernetes API which namespaces will have their requests, AdmissionReviews, sent to the TimeBomb solution.
+ValidatingWebhookConfiguration and MutatingWebhookConfiguration use this label to tell Kubernetes API which namespaces will have their requests, AdmissionReviews, sent to the TimeBomb solution.
 
 In the example below the matching label is "kubeomatic-io-timebomb-cluster" with value "dev-all". So, if you have two development clusters and both clusters has the TimeBomb solution you can specify in each cluster your app will be "exploded". At dev-01, dev-02 or dev-all.
 ```yaml
@@ -200,7 +200,7 @@ kubeomatic-io-timebomb: "enabled"
 
 ### Deployments Labels
 
-Deployments have the same labels a nameSpace does in his labels and at template labels.
+Deployments have the same labels a nameSpace does in its labels and at template labels.
 
 This is done to propagate the labels to the PODs.
 
@@ -281,7 +281,7 @@ Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-i
 
 
 ## Extend Validity
-After a validity has expired and the PODs deleted, all others resources for a solution will be there, in the cluster. Only PODs are deletes. Any other resource then PODs are not deleted.
+After a validity has expired and the PODs deleted, all others resources for a solution will be there, in the cluster. Only PODs are deleted. Any other resource then PODs are not deleted.
 
 Below is a NGINX namespace with expired validity.
 
