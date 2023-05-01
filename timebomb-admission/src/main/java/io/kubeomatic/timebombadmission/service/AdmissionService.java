@@ -84,8 +84,8 @@ public class AdmissionService {
         if (validResourceDeployment && !validResourcePod) {
             timer = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
         }
-        Integer timerInMinutes = getTimerInMinutes(timer);
-        Long validity = Epoch.dateToEpoch() + timerInMinutes * 60;
+        Integer timerInMinutes = getTimerInSeconds(timer);
+        Long validity = Epoch.dateToEpoch() + timerInMinutes;
         List<JsonPatch> jsonPatchList = new ArrayList<>();
         jsonPatchList.add(mutatePatchAnnotation("add","/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid",Long.toString(validity)));
         jsonPatchList.add(mutatePatchAnnotation("add","/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid-human",String.valueOf(Epoch.epochToDate(validity))));
@@ -177,7 +177,7 @@ public class AdmissionService {
         }
 
     }
-    public static Integer getTimerInMinutes(String timer) throws TimerNotValidException {
+    public static Integer getTimerInSeconds(String timer) throws TimerNotValidException {
         Integer defaultTimerInMinutes = Integer.valueOf(AppProperties.getProperty(AppProperties.propertyTimerDefault));
         try {
             char[] charTimerArray = timer.toCharArray();
@@ -204,13 +204,13 @@ public class AdmissionService {
             else {
                 switch (letter.toLowerCase()){
                     case "s":
-                        return integerTimer / 60;
-                    case "m":
                         return integerTimer;
-                    case "h":
+                    case "m":
                         return integerTimer * 60;
+                    case "h":
+                        return integerTimer * 3600;
                     case "d":
-                        return integerTimer * 60 * 24;
+                        return integerTimer * 3600 * 24;
                 }
             }
         } catch (Exception e){
