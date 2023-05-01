@@ -242,8 +242,9 @@ public class AdmissionService {
 
     }
     public static void   validateOperation(String operationName){
-        boolean validaOperation = operationName.equalsIgnoreCase("create");
-        if ( ! validaOperation) {
+        boolean validaOperationCreate = operationName.equalsIgnoreCase("create");
+        boolean validaOperationUpdate = operationName.equalsIgnoreCase("update");
+        if ( ! ( ! validaOperationCreate || ! validaOperationUpdate) ){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
         }
     }
