@@ -19,7 +19,7 @@ schedule:
     logging.level.root=INFO
     management.endpoint.health.probes.enabled=true
     kubeomatic-io.timebomb.label.selector.value=dev-02;dev-all
-    cron.expression= */15 * * * * *
+    cron.expression= * * * * * *
 certificate:
   rootCaCert: ""
   keyStore: ""
@@ -30,5 +30,5 @@ common:
   registry: "registry.hub.docker.com"
   repository: "kubeomatic/"
   image: "timebomb"
-  imageTag: "0.324"
+  imageTag: "0.337"
   labels: {}
