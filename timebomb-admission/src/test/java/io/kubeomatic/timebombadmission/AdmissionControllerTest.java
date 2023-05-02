@@ -127,9 +127,10 @@ public class AdmissionControllerTest {
                 "enabled");
 
         mockMvc.perform(post("/api/validation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(podAdmissionReviewData)
-                .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(podAdmissionReviewData)
+                        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.status.code").value("200"));
 
     }
     @DisplayName("Test VALIDATE CREATE POD DISABLED")
@@ -243,9 +244,10 @@ public void testValidateDeploymentCreationValid() throws Exception {
                 "enabled");
 
         mockMvc.perform(post("/api/validation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(podAdmissionReviewData)
-                .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(podAdmissionReviewData)
+                        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.status.code").value("200"));
 
     }
     @DisplayName("Test VALIDATE CREATE DEPLOYMENT DISABLED")

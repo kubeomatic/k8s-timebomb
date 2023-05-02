@@ -178,7 +178,7 @@ public class AdmissionService {
 
     }
     public static Integer getTimerInSeconds(String timer) throws TimerNotValidException {
-        Integer defaultTimerInMinutes = Integer.valueOf(AppProperties.getProperty(AppProperties.propertyTimerDefault));
+        Integer defaultTimerInSeconds = Integer.valueOf(AppProperties.getProperty(AppProperties.propertyTimerDefault));
         try {
             char[] charTimerArray = timer.toCharArray();
             String sanitizedTimer = timer.replaceAll("[A-z]","").replaceAll("\"","");
@@ -199,7 +199,7 @@ public class AdmissionService {
                 count++;
             }
             if (numberOfLetters > 1) {
-                return defaultTimerInMinutes;
+                return defaultTimerInSeconds;
             }
             else {
                 switch (letter.toLowerCase()){
@@ -215,16 +215,16 @@ public class AdmissionService {
             }
         } catch (Exception e){
             logger.error("Failt oconvert timer data to minutes. Timer=" + timer + " STACK=" + e.getMessage());
-            return defaultTimerInMinutes;
+            return defaultTimerInSeconds;
         }
-        return defaultTimerInMinutes;
+        return defaultTimerInSeconds;
     }
 
     public static void validateResource(String resourceName){
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
         boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
         if ( ! validResourcePod && ! validResourceDeployment) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Resource is invalid");
         }
     }
     public static void validateResource(String resourceName, boolean failForPods){
@@ -236,15 +236,16 @@ public class AdmissionService {
         }
         else{
             if ( ! validResourcePod && ! validResourceDeployment) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Resource is invalid");
             }
         }
 
     }
-    public static void   validateOperation(String operationName){
-        boolean validaOperation = operationName.equalsIgnoreCase("create");
-        if ( ! validaOperation) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+    public static void validateOperation(String operationName){
+        boolean validaOperationCreate = operationName.equalsIgnoreCase("create");
+        boolean validaOperationUpdate = operationName.equalsIgnoreCase("update");
+        if ( ! validaOperationCreate && ! validaOperationUpdate ){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation is invalid");
         }
     }
 }
