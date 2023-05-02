@@ -84,8 +84,8 @@ public class AdmissionService {
         if (validResourceDeployment && !validResourcePod) {
             timer = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
         }
-        Integer timerInMinutes = getTimerInMinutes(timer);
-        Long validity = Epoch.dateToEpoch() + timerInMinutes * 60;
+        Integer timerInMinutes = getTimerInSeconds(timer);
+        Long validity = Epoch.dateToEpoch() + timerInMinutes;
         List<JsonPatch> jsonPatchList = new ArrayList<>();
         jsonPatchList.add(mutatePatchAnnotation("add","/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid",Long.toString(validity)));
         jsonPatchList.add(mutatePatchAnnotation("add","/spec/template/metadata/annotations/kubeomatic-io-timebomb-valid-human",String.valueOf(Epoch.epochToDate(validity))));
@@ -177,8 +177,8 @@ public class AdmissionService {
         }
 
     }
-    public static Integer getTimerInMinutes(String timer) throws TimerNotValidException {
-        Integer defaultTimerInMinutes = Integer.valueOf(AppProperties.getProperty(AppProperties.propertyTimerDefault));
+    public static Integer getTimerInSeconds(String timer) throws TimerNotValidException {
+        Integer defaultTimerInSeconds = Integer.valueOf(AppProperties.getProperty(AppProperties.propertyTimerDefault));
         try {
             char[] charTimerArray = timer.toCharArray();
             String sanitizedTimer = timer.replaceAll("[A-z]","").replaceAll("\"","");
@@ -199,32 +199,32 @@ public class AdmissionService {
                 count++;
             }
             if (numberOfLetters > 1) {
-                return defaultTimerInMinutes;
+                return defaultTimerInSeconds;
             }
             else {
                 switch (letter.toLowerCase()){
                     case "s":
-                        return integerTimer / 60;
-                    case "m":
                         return integerTimer;
-                    case "h":
+                    case "m":
                         return integerTimer * 60;
+                    case "h":
+                        return integerTimer * 3600;
                     case "d":
-                        return integerTimer * 60 * 24;
+                        return integerTimer * 3600 * 24;
                 }
             }
         } catch (Exception e){
             logger.error("Failt oconvert timer data to minutes. Timer=" + timer + " STACK=" + e.getMessage());
-            return defaultTimerInMinutes;
+            return defaultTimerInSeconds;
         }
-        return defaultTimerInMinutes;
+        return defaultTimerInSeconds;
     }
 
     public static void validateResource(String resourceName){
         boolean validResourcePod = resourceName.equalsIgnoreCase("pods");
         boolean validResourceDeployment = resourceName.equalsIgnoreCase("deployments");
         if ( ! validResourcePod && ! validResourceDeployment) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Resource is invalid");
         }
     }
     public static void validateResource(String resourceName, boolean failForPods){
@@ -236,15 +236,16 @@ public class AdmissionService {
         }
         else{
             if ( ! validResourcePod && ! validResourceDeployment) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Resource is invalid");
             }
         }
 
     }
-    public static void   validateOperation(String operationName){
-        boolean validaOperation = operationName.equalsIgnoreCase("create");
-        if ( ! validaOperation) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation or resource invalid");
+    public static void validateOperation(String operationName){
+        boolean validaOperationCreate = operationName.equalsIgnoreCase("create");
+        boolean validaOperationUpdate = operationName.equalsIgnoreCase("update");
+        if ( ! validaOperationCreate && ! validaOperationUpdate ){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Operation is invalid");
         }
     }
 }
