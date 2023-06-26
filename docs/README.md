@@ -6,54 +6,78 @@
 
 # TimeBomb
 
-TimeBomb does what the name suggests. You can add a timer to explode something. In this case it'll "explode" kubernetes PODs.
+TimeBomb does what the name suggests. You can add a timer to explode something. In this case, it'll "explode" Kubernetes PODs.
 
-The TimeBomb solution is a Spring Boot app which rely on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validity to PODs, based on a timer annotation, and prevent expired PODs to be deployed, with expired validity.
 
-When you deploy an app in a kubernetes cluster TimeBomb will read a timer annotation and sum this timer to the current time to create a validity. If you add a timer of 15 minutes, a validity of the current time + 15 minutes will be added to the deployment as an annotation. This process is done using a "mutation webhook".
+The TimeBomb solution is a Spring Boot app that relies on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validity to PODs, based on a timer annotation, and prevent expired PODs to be deployed, with expired validity.
 
-Deployments and PODs will only be created if they have a valid validity. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
 
-After a POD is expired, EPOCH number inferior to current EPOCH, the schedule will delete the expired POD and the replicaset will not be able to deploy new PODs with expired validity.
+When you deploy an app in a Kubernetes cluster, TimeBomb will read a timer annotation and sum this timer to the current time to create validity. If you add a timer of 15 minutes, the validity of the current time + 15 minutes will be added to the deployment as an annotation. This process is done using a "mutation webhook".
+
+
+Deployments and PODs will only be created if they have valid validity. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
+
+
+After a POD is expired, the EPOCH number is inferior to the current EPOCH, the schedule will delete the expired POD and the ReplicaSet will not be able to deploy new PODs with expired validity.
+
 
 You can warm up the app again by two methods.
 
+
 1. Redeploy your app, so the mutation process can calculate a new validity based on the timer.
 2. Do a JsonPatch on the resource by extending the validity annotation.
+
+
 
 ---
 
 ## Applicability
 
-In a cloud environment a kubernetes cluster is a bunch of computers.
+
+In a cloud environment, a Kubernetes cluster is a bunch of computers.
+
 
 Those computers are called "nodes" and the growth of the cluster is pushed by the increase in the number of PODs running.
-Thus, the growth of PODs forces the increase in the number of nodes. And you are charged by the cloud provider by the amount of compute, CPU, that is consumed. TimeBomb will reduce the PODs running, so it can reduce the number of nodes.
+Thus, the growth of PODs forces the increase in the number of nodes. And you are charged by the cloud provider by the amount of computing, CPU, that is consumed. TimeBomb will reduce the PODs running, so it can reduce the number of nodes.
+
 
 ### Proof of Concept
 
+
 TimeBomb is great for POC where you may try a new tool/solution and don't want to forget to remove it from your test cluster.
 
-With TimeBomb it will happen automatically. TimeBomb will delete it for you after the timer expire.
+
+With TimeBomb it will happen automatically. TimeBomb will delete it for you after the timer expires.
+
 
 ### Development and test environment
 
-You may have different environments for each purpose in software development, quality assurance, tests and security.
 
-After an application has passed security tests, unit test and been deployed in a quality assurance cluster, this app may not be required anymore running on a development cluster or any other intermediate environment. With TimeBomb you can remove the app PODs to reduce infrastructure cost.
+You may have different environments for each purpose in software development, quality assurance, tests, and security.
 
-You may have similar scenario for an app that is not in active development and wish that this app become unprovisioned after few days from non-productive environments.
+
+After an application has passed security tests, unit testings and has been deployed in a quality assurance cluster, this app may not be required anymore to run on a development cluster or any other intermediate environment. With TimeBomb you can remove the app PODs to reduce infrastructure cost.
+
+
+You may have a similar scenario for an app that is not in active development and wishes that this app become unprovisioned after few days from non-productive environments.
+
 
 TimeBomb will keep your footprint small in your cluster.
 
+
 ### DR - Disaster Recovery
+
 
 You may have a disaster recovery cluster but do not want to keep all apps running there, but at the same time wishes to run all apps there for an amount of time to validate connectivity and functionality.
 
-TimeBomb will remove all apps PODs from the cluster after the expiration of the validity.
+
+TimeBomb will remove all apps' PODs from the cluster after the expiration of the validity.
 You can warm up all PODs in a cluster using a simple command of JsonPatch with kubectl to extend the validity. This command is offered here with the solution and explained in the section "Extend Validity".
 
+
 ---
+
+
 
 ## Architecture
 
@@ -107,24 +131,34 @@ common:
 ```
 ### Certificate
 
+
 Kubernetes will send AdmissionReviews to the admission app only using TLS.
+
 
 So, a [CA, Certificate authority,](https://en.wikipedia.org/wiki/Certificate_authority) with a certificate needs to be emitted. This can be done using a self-signed certificate.
 
+
 ValidatingWebhookConfiguration and MutatingWebhookConfiguration must know the CA used to sign the certificate and the certificate needs to match the [DNS for Services](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) on the cluster.
 
-For that, there is a script that can be used to generate the Certificate authority, certificate and java keystore.
+
+For that, there is a script that can be used to generate the Certificate authority, certificate, and java keystore.
+
 
 This [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/helm-chart/kubeomatic-timebomb/certificate_generator.sh) will read the information in the values.yaml from the helm chart.
 
 
+
+
 ### How to Install
+
 
 1. Edit the values for the helm chart: [values.yaml](https://github.com/kubeomatic/k8s-timebomb/blob/main/helm-chart/kubeomatic-timebomb/values.yaml)
 2. Add the [TimeBomb](https://helmchart.kubeomatic.io/timebomb/) helm repository.
-3. Generate a keystore with a certificate. The certificate common name is dependable from the resource DNS name. Example: service.namespace.svc.cluster.local. To easy generate the certificate you may use this [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/helm-chart/kubeomatic-timebomb/certificate_generator.sh) which reads the values.yaml.
-4. Create the namespace in the cluster kubernetes for the solution.
+3. Generate a keystore with a certificate. The certificate's common name is dependable on the resource DNS name. Example: service.namespace.svc.cluster.local. To easily generate the certificate you may use this [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/helm-chart/kubeomatic-timebomb/certificate_generator.sh) which reads the values.yaml.
+4. Create the namespace in the cluster Kubernetes for the solution.
 5. Install solution via helm.
+
+
 
 ```shell
 $ ./certificate_generator.sh values.yaml
@@ -183,26 +217,36 @@ spec:
 
 ```
 ### NameSpace Labels
-For the solution to work the namespace needs to have a label that match the selector used to deploy TimeBomb.
+For the solution to work the namespace needs to have a label that matches the selector used to deploy TimeBomb.
+
 
 ValidatingWebhookConfiguration and MutatingWebhookConfiguration use this label to tell Kubernetes API which namespaces will have their requests, AdmissionReviews, sent to the TimeBomb solution.
 
-In the example below the matching label is "kubeomatic-io-timebomb-cluster" with value "dev-all". So, if you have two development clusters and both clusters has the TimeBomb solution you can specify in each cluster your app will be "exploded". At dev-01, dev-02 or dev-all.
+
+In the example below the matching label is "kubeomatic-io-timebomb-cluster" with the value "dev-all". So, if you have two development clusters and both clusters have the TimeBomb solution you can specify in each cluster your app will be "exploded". At dev-01, dev-02, or dev-all.
 ```yaml
 kubeomatic-io-timebomb-cluster: "dev-all"
 ```
 The label below is used by the app to check if the solution is active.
+
 
 Is an extra layer of protection to avoid unwanted deletion of PODs.
 ```yaml
 kubeomatic-io-timebomb: "enabled"
 ```
 
+
 ### Deployments Labels
+
 
 Deployments have the same labels a nameSpace does in its labels and at template labels.
 
+
 This is done to propagate the labels to the PODs.
+
+
+
+
 
 ```yaml
 metadata:
@@ -242,28 +286,36 @@ kubeomatic-io-timebomb-timer: "24h"
 kubeomatic-io-timebomb-timer: "1d"
 ```
 
-"kubeomatic-io-timebomb-sku" is an optional annotation which is useful with the "Extend Validity" script, where you can warm up all your pods that match the entire SKU expression or part of it.
+"kubeomatic-io-timebomb-sku" is an optional annotation that is useful with the "Extend Validity" script, where you can warm up all your pods that match the entire SKU expression or part of it.
+
 
 Example:
 ```shell
-# Will change the validity of an App that match SKU "/tribe/squad/app" to 60 minutes
+# Will change the validity of an App that matches SKU "/tribe/squad/app" to 60 minutes
 $ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/tribe/squad/app" 60
+
 
 # Will change the validity of all Apps in the squad "/tribe/squad" to 60 minutes
 $ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/tribe/squad" 60
 
+
 # Will change the validity of all Apps in the tribe "/tribe" to 60 minutes
 $ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/tribe" 60
+
 
 # Will change the validity of all Apps in the cluster "/" to 60 minutes
 $ TIMEBOMB EXTEND_TIMEBOMB_VALIDITY_BY_SKU "/" 60
 ```
 ### Deployment Final State
-During the mutation fase the admission app will read the timer and add the validity.
+During the mutation phase, the admission app will read the timer and add validity.
+
 
 It'll add "kubeomatic-io-timebomb-valid". An annotation with the EPOCH number when the POD should be deleted.
 
-The annotation "kubeomatic-io-timebomb-valid-human" will be added only to make easy to read the expiration date of the resource.
+
+The annotation "kubeomatic-io-timebomb-valid-human" will be added only to make it easy to read the expiration date of the resource.
+
+
 ```yaml
 spec:
   template:
@@ -281,11 +333,14 @@ Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-i
 
 
 ## Extend Validity
-After a validity has expired and the PODs deleted, all others resources for a solution will be there, in the cluster. Only PODs are deleted. Any other resource then PODs are not deleted.
+After the validity has expired and the PODs deleted, all other resources for a solution will be there, in the cluster. Only PODs are deleted. Any other resource than PODs is not deleted.
 
-Below is a NGINX namespace with expired validity.
+
+Below is an NGINX namespace with expired validity.
+
 
 There are no PODs running.
+
 
 ```shell
 $ kubectl -n nginx get all
@@ -326,8 +381,13 @@ NAME                                          DESIRED   CURRENT   READY   AGE
 replicaset.apps/nginx-deployment-6598d88757   0         0         0       3d22h
 replicaset.apps/nginx-deployment-fc8ff7b68    8         8         8       58s
 ```
-You may find a scenario where the replicaset still reflect the old validity annotation. In this case you may have to delete the outdated replicaset definition.
+You may find a scenario where the ReplicaSet still reflects the old validity annotation. In this case, you may have to delete the outdated ReplicaSet definition.
 
-To make things easer, there is a [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/tools/extend-timer-bash/run.sh) that may help you with those operations. Specially in large scale cluster.
+
+To make things easier, there is a [script](https://github.com/kubeomatic/k8s-timebomb/blob/main/tools/extend-timer-bash/run.sh) that may help you with those operations. Especially in large-scale cluster.
+
 
 This script is ideal to use with [RUNDECK](https://www.rundeck.com/) or other automation solutions.
+
+
+
