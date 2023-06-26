@@ -327,7 +327,7 @@ spec:
         kubeomatic-io-timebomb-valid-human: Wed Apr 19 22:21:05 GMT 2023
 ```
 
-Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-io-timebomb-valid-human" on your deployment manifest. Those labels are added on the fly by the mutation fase.
+Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-io-timebomb-valid-human" on your deployment manifest. Those labels are added on the fly by the mutation phase.
 
 ***
 
