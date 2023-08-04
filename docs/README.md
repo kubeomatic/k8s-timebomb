@@ -1,9 +1,3 @@
-```diff
-- THIS DOCUMENTATION IS UNDER CUNSTRUCTION. THE INFORMATION HERE MAY BE INCOMPLETE - 2023/04
-```
-
----
-
 # TimeBomb
 
 TimeBomb does what the name suggests. You can add a timer to explode something. In this case, it'll "explode" Kubernetes PODs.
