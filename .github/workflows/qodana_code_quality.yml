@@ -16,6 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: 'Qodana Scan'
+        working-directory: ${{ matrix.dir }}
         uses: JetBrains/qodana-action@v2023.2
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
