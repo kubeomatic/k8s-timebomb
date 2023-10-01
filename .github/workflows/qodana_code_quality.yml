@@ -13,11 +13,10 @@ jobs:
       matrix: { dir: [ 'timebomb-admission', 'timebomb-scheduler' ] }
     steps:
       - uses: actions/checkout@v3
-        working-directory: ${{ matrix.dir }}
         with:
           fetch-depth: 0
       - name: 'Qodana Scan'
-        working-directory: ${{ matrix.dir }}
+        projectPath: ${{ matrix.dir }}
         uses: JetBrains/qodana-action@v2023.2
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
