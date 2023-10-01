@@ -9,6 +9,8 @@ on:
 jobs:
   qodana:
     runs-on: ubuntu-latest
+    strategy:
+      matrix: { dir: [ 'timebomb-admission', 'timebomb-scheduler' ] }
     steps:
       - uses: actions/checkout@v3
         with:
