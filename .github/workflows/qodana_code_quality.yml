@@ -13,6 +13,7 @@ jobs:
       matrix: { dir: [ 'timebomb-admission', 'timebomb-scheduler' ] }
     steps:
       - uses: actions/checkout@v3
+        working-directory: ${{ matrix.dir }}
         with:
           fetch-depth: 0
       - name: 'Qodana Scan'
