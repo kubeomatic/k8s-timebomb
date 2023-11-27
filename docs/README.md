@@ -120,7 +120,7 @@ common:
   registry: "registry.hub.docker.com"
   repository: "kubeomatic/"
   image: "timebomb"
-  imageTag: "0.322"
+  imageTag: "0.424"
   labels: {}
 ```
 ### Certificate
