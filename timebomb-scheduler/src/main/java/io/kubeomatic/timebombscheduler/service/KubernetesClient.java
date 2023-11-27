@@ -39,7 +39,9 @@ public class KubernetesClient {
                         null,
                         null,
                         null,
+                        null,
                         null);
+
                 for (V1Pod item : list.getItems())
                 {
 
