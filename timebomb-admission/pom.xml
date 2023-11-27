@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.5</version>
+		<version>3.2.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -18,6 +18,20 @@
 		<java.version>17</java.version>
 		<snakeyaml.version>2.0</snakeyaml.version>
 	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>2.15.0</version>
+			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>org.apache.tomcat.embed:</groupId>-->
+<!--				<artifactId>tomcat-embed-core</artifactId>-->
+<!--				<version>10.1.9</version>-->
+<!--			</dependency>-->
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -43,14 +57,14 @@
 		<dependency>
 			<groupId>com.google.cloud.tools</groupId>
 			<artifactId>jib-maven-plugin</artifactId>
-			<version>3.3.1</version>
+			<version>3.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.kubernetes/client-java -->
 		<dependency>
 			<groupId>io.kubernetes</groupId>
 			<artifactId>client-java</artifactId>
-			<version>17.0.1</version>
+			<version>19.0.0</version>
 		</dependency>
 
 		<dependency>
