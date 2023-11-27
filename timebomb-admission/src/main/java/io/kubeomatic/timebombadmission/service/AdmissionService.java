@@ -80,9 +80,11 @@ public class AdmissionService {
 
         if (validResourcePod && !validResourceDeployment) {
             timer = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
+            logger.debug("UUID=" + getAdmissionUUID(admissionReview) + ", timer=" + timer);
         }
         if (validResourceDeployment && !validResourcePod) {
             timer = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombTimer();
+            logger.debug("UUID=" + getAdmissionUUID(admissionReview) + ", timer=" + timer);
         }
         Integer timerInMinutes = getTimerInSeconds(timer);
         Long validity = Epoch.dateToEpoch() + timerInMinutes;
@@ -138,9 +140,11 @@ public class AdmissionService {
 
             if (validResourcePod && !validResourceDeployment) {
                 validityString = admissionReview.getRequest().getObject().getMetadata().getAnnotations().getKubeomaticIoTimebombValid();
+                logger.debug("UUID=" + getAdmissionUUID(admissionReview) + ", Valid String=" + validityString);
             }
             if (validResourceDeployment && !validResourcePod) {
                 validityString = admissionReview.getRequest().getObject().getSpec().getTemplate().getMetadata().getAnnotations().getKubeomaticIoTimebombValid();
+                logger.debug("UUID=" + getAdmissionUUID(admissionReview) + ", Valid String=" + validityString);
             }
 
             assert validityString != null;
@@ -148,7 +152,7 @@ public class AdmissionService {
 
             return Epoch.isValid(validityLong);
         } catch (NullPointerException | NumberFormatException e){
-            logger.error("UUID=\"" + getAdmissionUUID(admissionReview) + "\" Annotation  " + AppProperties.getProperty(AppProperties.propertyLabelTimebomb) + " may be empty, " + e.getMessage());
+            logger.error("UUID=\"" + getAdmissionUUID(admissionReview) + "\" Annotation  kubeomatic-io-timebomb-valid may be empty, " + e.getMessage());
             return false;
         }
     }
