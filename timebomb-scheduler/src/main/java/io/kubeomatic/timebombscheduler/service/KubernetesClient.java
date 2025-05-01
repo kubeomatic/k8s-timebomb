@@ -29,18 +29,8 @@ public class KubernetesClient {
                 Configuration.setDefaultApiClient(client);
                 CoreV1Api api = new CoreV1Api();
 
-                V1PodList list = api.listPodForAllNamespaces(
-                        null,
-                        null,
-                        null,
-                        AppProperties.getProperty(AppProperties.labelSelectorKey) + "=" + value,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null);
+                V1PodList list = api.listPodForAllNamespaces()
+                    .labelSelector(AppProperties.getProperty(AppProperties.labelSelectorKey) + "=" + value).execute();
 
                 for (V1Pod item : list.getItems())
                 {
@@ -92,14 +82,8 @@ public class KubernetesClient {
                                             try {
                                                 api.deleteNamespacedPod(
                                                         item.getMetadata().getName(),
-                                                        item.getMetadata().getNamespace(),
-                                                        null,
-                                                        "false",
-                                                        null,
-                                                        null,
-                                                        null,
-                                                        v1DeleteOptions
-                                                );
+                                                        item.getMetadata().getNamespace()
+                                                        ).execute();
 
                                             } catch (Exception e) {
                                                 logger.error("Check Service account permission. App may be without privilege to read or delete resources STACK=" + e);
