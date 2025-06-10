@@ -3,16 +3,16 @@
 TimeBomb does what the name suggests. You can add a timer to explode something. In this case, it'll "explode" Kubernetes PODs.
 
 
-The TimeBomb solution is a Spring Boot app that relies on [Kubernetes Dynamic Admission Control ](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validity to PODs, based on a timer annotation, and prevent expired PODs to be deployed, with expired validity.
+The TimeBomb solution is a Spring Boot app that relies on [Kubernetes Dynamic Admission Control](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) to add validity to PODs, based on a timer annotation, and prevent expired PODs to be deployed, with expired validity.
 
 
 When you deploy an app in a Kubernetes cluster, TimeBomb will read a timer annotation and sum this timer to the current time to create validity. If you add a timer of 15 minutes, the validity of the current time + 15 minutes will be added to the deployment as an annotation. This process is done using a "mutation webhook".
 
 
-Deployments and PODs will only be created if they have valid validity. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
+Deployments and PODs will only be created if they are considered valid. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
 
 
-After a POD is expired, the EPOCH number is inferior to the current EPOCH, the schedule will delete the expired POD and the ReplicaSet will not be able to deploy new PODs with expired validity.
+After a POD expires, if its EPOCH is less than the current time, the scheduler deletes the POD and the ReplicaSet cannot deploy new PODs with expired validity.
 
 
 You can warm up the app again by two methods.
@@ -224,7 +224,7 @@ kubeomatic-io-timebomb-cluster: "dev-all"
 The label below is used by the app to check if the solution is active.
 
 
-Is an extra layer of protection to avoid unwanted deletion of PODs.
+This label provides an extra layer of protection to avoid unwanted deletion of PODs.
 ```yaml
 kubeomatic-io-timebomb: "enabled"
 ```
@@ -267,7 +267,7 @@ spec:
 
 "kubeomatic-io-timebomb-timer" is the only required annotation. It's used to set the timer. 
 
-Valid suffix are s(for seconds), m(for minutes), h(for hours) and d(for days):
+Valid suffixes are s(for seconds), m(for minutes), h(for hours) and d(for days):
 
 Example:
 ```yaml
@@ -327,7 +327,7 @@ Note that you should not specify "kubeomatic-io-timebomb-valid" or "kubeomatic-i
 
 
 ## Extend Validity
-After the validity has expired and the PODs deleted, all other resources for a solution will be there, in the cluster. Only PODs are deleted. Any other resource than PODs is not deleted.
+After the PODs expire and are deleted, all other resources remain in the cluster.
 
 
 Below is an NGINX namespace with expired validity.
