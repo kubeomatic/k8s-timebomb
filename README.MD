@@ -1,7 +1,5 @@
 # KubeOMatic TimeBomb
 
-This project can help you save money in your kubernetes infrastructure by deleting unused PODs by setting a timer.
+KubeOMatic TimeBomb automatically removes Kubernetes pods after a user-defined timer expires. A dynamic admission controller annotates each deployment with an expiration timestamp, and a scheduler deletes pods once that validity has passed. This keeps clusters tidy and helps reduce costs.
 
-For information about the project and installation visit [here](https://timebomb.kubeomatic.io/).
-
-
+For installation steps and more details, see the [documentation](docs/README.md) or visit our [website](https://timebomb.kubeomatic.io/).
