@@ -2,6 +2,7 @@
 * Alexandre D´Amato 
   * [LinkedIn](https://www.linkedin.com/in/alexandre-nogueira-d-amato-gomes-65750283/)
   * [Wiki](https://wiki.clusterlab.com.br)
+  * [Medium TimeBomb](https://medium.com/cloud-native-daily/reduce-your-kubernetes-cost-with-the-time-bomb-solution-21bc918d1309)
 
 # TimeBomb
 
