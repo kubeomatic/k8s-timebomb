@@ -1,3 +1,8 @@
+# Author
+* Alexandre D´Amato 
+  * [LinkedIn](https://www.linkedin.com/in/alexandre-nogueira-d-amato-gomes-65750283/)
+  * [Wiki](https://wiki.clusterlab.com.br)
+
 # TimeBomb
 
 TimeBomb does what the name suggests. You can add a timer to explode something. In this case, it'll "explode" Kubernetes PODs.
