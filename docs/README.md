@@ -9,7 +9,7 @@ The TimeBomb solution is a Spring Boot app that relies on [Kubernetes Dynamic Ad
 When you deploy an app in a Kubernetes cluster, TimeBomb will read a timer annotation and sum this timer to the current time to create validity. If you add a timer of 15 minutes, the validity of the current time + 15 minutes will be added to the deployment as an annotation. This process is done using a "mutation webhook".
 
 
-Deployments and PODs will only be created if they have valid validity. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
+Deployments and PODs will only be created if they are considered valid. An [EPOCH](https://en.wikipedia.org/wiki/Epoch) number greater than the current EPOCH.
 
 
 After a POD is expired, the EPOCH number is inferior to the current EPOCH, the schedule will delete the expired POD and the ReplicaSet will not be able to deploy new PODs with expired validity.
