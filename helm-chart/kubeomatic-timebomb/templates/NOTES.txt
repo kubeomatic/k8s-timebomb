@@ -1,0 +1,4 @@
+Check the admission webhook pods with "kubectl get pods -n timebomb".
+Validate that mutating and validating webhook configurations exist.
+Extend expiration with tools/extend-timer-bash/run.sh or a kubectl patch.
+Review scheduler logs to confirm expired pods are deleted.
