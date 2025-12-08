@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.4</version>
+                <version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -16,20 +16,20 @@
 	<description>timeboomb-admission</description>
 	<properties>
 		<java.version>17</java.version>
-		<snakeyaml.version>2.0</snakeyaml.version>
+                <snakeyaml.version>2.3</snakeyaml.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
-				<version>2.18.3</version>
+                                <version>2.18.4</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>2.18.3</version>
+                                <version>2.18.4</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -64,15 +64,15 @@
 		</dependency>
 		<dependency>
 			<groupId>com.google.cloud.tools</groupId>
-			<artifactId>jib-maven-plugin</artifactId>
-			<version>3.4.5</version>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <version>3.4.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.kubernetes/client-java -->
 		<dependency>
 			<groupId>io.kubernetes</groupId>
-			<artifactId>client-java</artifactId>
-			<version>23.0.0</version>
+                        <artifactId>client-java</artifactId>
+                        <version>26.0.0</version>
 		</dependency>
 
 		<dependency>
@@ -116,8 +116,8 @@
 			</plugin>
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.4.5</version>
+                                <artifactId>jib-maven-plugin</artifactId>
+                                <version>3.4.6</version>
 				<configuration>
 					<allowInsecureRegistries>true</allowInsecureRegistries>
 					<from>
